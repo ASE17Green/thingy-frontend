@@ -3,6 +3,7 @@ yarn-error.log
 # compiled output
 /tmp
 /out-tsc
+.tmp/
 
 # dependencies
 /node_modules
