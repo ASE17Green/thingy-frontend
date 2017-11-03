@@ -3,7 +3,7 @@ import { routerTransition } from '../router.animations';
 import { UserService} from '../shared/services/index';
 import { User } from '../shared/models/user';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
-import { AlertComponent } from '../layout/bs-component/components/index';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material';
 
 @Component({
     selector: 'app-signup',
@@ -18,7 +18,8 @@ export class SignupComponent implements OnInit {
     user: User = new User();
 
     constructor(private userService: UserService,
-                private fb: FormBuilder) {
+                private fb: FormBuilder,
+                private snackbar: MatSnackBar) {
 
         this.createForm();
     }
@@ -46,8 +47,10 @@ export class SignupComponent implements OnInit {
 
 
     submit() {
-        this.user.name = 'asdf';
-        this.user.password = 'mypw';
         this.userService.createUser(this.user);
+        let config = new MatSnackBarConfig();
+        config.extraClasses = ['snackbar-design'];
+        config.duration = 3000;
+        this.snackbar.open('User successfully created', 'close', config);
     }
 }

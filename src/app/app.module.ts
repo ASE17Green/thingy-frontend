@@ -8,6 +8,7 @@ import { AuthGuard } from './shared';
 import {ThingyService} from './shared/services/thingy.service';
 import {UserService} from './shared/services/user.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatSnackBarModule } from '@angular/material';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: Http) {
@@ -22,7 +23,8 @@ export function HttpLoaderFactory(http: Http) {
         HttpModule,
         AppRoutingModule,
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        MatSnackBarModule
     ],
     providers: [AuthGuard, UserService, ThingyService],
     bootstrap: [AppComponent],
