@@ -17,6 +17,4 @@ export class ThingyData {
 
     gravity: number;
 
-
-
 }

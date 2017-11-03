@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
+import { ThingyService} from '../../shared/services/index';
+import {ThingyData} from "../../shared/models/thingy-data";
 
 @Component({
     selector: 'app-charts',
@@ -8,6 +10,7 @@ import { routerTransition } from '../../router.animations';
     animations: [routerTransition()]
 })
 export class ChartsComponent implements OnInit {
+    thingyData: ThingyData[];
 
     // bar chart
     public barChartOptions: any = {
@@ -113,9 +116,26 @@ export class ChartsComponent implements OnInit {
          */
     }
 
-    constructor() {
+    constructor(private thingyService: ThingyService) {
     }
 
     ngOnInit() {
+    }
+
+    getAllData(): void {
+
+        this.thingyService.getThingyDataComplete().then(
+            (thingyData: ThingyData[]) => {
+                this.thingyData = thingyData;
+                console.log('got it!');
+                console.log(this.thingyData);
+            },
+            error => {
+                console.log('Something went wrong');
+                /*
+                this.snackbar.open('Something went wrong. Please contact an admin', 'close', config);
+                this.router.navigate(['/signup']);
+                */
+            });
     }
 }
