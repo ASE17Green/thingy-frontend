@@ -4,6 +4,7 @@ import { UserService} from '../shared/services/index';
 import { User } from '../shared/models/user';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-signup',
@@ -19,7 +20,8 @@ export class SignupComponent implements OnInit {
 
     constructor(private userService: UserService,
                 private fb: FormBuilder,
-                private snackbar: MatSnackBar) {
+                private snackbar: MatSnackBar,
+                private router: Router) {
 
         this.createForm();
     }
@@ -47,10 +49,29 @@ export class SignupComponent implements OnInit {
 
 
     submit() {
-        this.userService.createUser(this.user);
+        // alert settings
         let config = new MatSnackBarConfig();
         config.extraClasses = ['snackbar-design'];
         config.duration = 3000;
-        this.snackbar.open('User successfully created', 'close', config);
+
+        this.userService.createUser(this.user).then(
+            data => {
+                const jsonData = JSON.parse(JSON.stringify(data));
+                if (jsonData.success) {
+                    console.log('success: ' + jsonData.msg);
+                    this.snackbar.open('User successfully created', 'close', config);
+                    this.router.navigate(['/login']);
+                } else {
+                    console.log('fail: ' + jsonData.msg);
+                    this.snackbar.open(jsonData.msg, 'close', config);
+                    this.router.navigate(['/signup']);
+                }
+            },
+            error => {
+                console.log('Something went wrong');
+                this.snackbar.open('Something went wrong. Please contact an admin', 'close', config);
+                this.router.navigate(['/signup']);
+            });
+
     }
 }

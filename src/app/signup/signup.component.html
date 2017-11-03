@@ -2,11 +2,9 @@
     <div class="row">
         <div class="col-md-4 push-md-4">
             <img class="user-avatar" src="assets/images/logo.png" width="150px" />
-            <h1>Login to access your delivery information</h1>
+            <h1>Create a new User</h1>
             <form [formGroup]="userForm">
                 <div class="form-content">
-                    {{userForm.value | json}}
-                    {{userForm.status | json}}
                     <div class="form-group">
                         <input type="text" class="form-control input-underline input-lg" formControlName="name"
                                id="name" placeholder="Username" [(ngModel)]="user.name" required>
@@ -22,7 +20,7 @@
                     </div>
                 </div>
                 <button class="btn rounded-btn" [disabled]="!userForm.valid" (click)="submit()"> Register </button>&nbsp;
-                <button class="btn rounded-btn" [routerLink]="['/login']"> Log in </button>
+                <button class="btn rounded-btn" [routerLink]="['/login']"> Cancel </button>
             </form>
         </div>
     </div>

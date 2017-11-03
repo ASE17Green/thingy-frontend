@@ -9,6 +9,7 @@ import 'rxjs/add/operator/switchMap';   // this adds the non-static 'switchMap' 
 @Injectable()
 export class UserService {
     private createUserUrl = `${AppConfig.apiEndpoint}/user/register`;
+    private authenticateUserUrl = `${AppConfig.apiEndpoint}/user/authenticate`;
     private getUsersUrl = `${AppConfig.apiEndpoint}/user/`;
 
     constructor(private http: Http) { }
@@ -36,6 +37,28 @@ export class UserService {
                 }
             })
             .catch(this.handleError);
+    }
+
+    authenticateUser(user: User): Promise<JSON> {
+        return this.http.post(this.authenticateUserUrl, user)
+            .toPromise()
+            .then(res => {
+                if (res.ok) {
+                    console.log(res.json());
+                    return res.json();
+                }
+            })
+            .catch(this.handleError);
+    }
+
+    storeUserData(token: string, user: string): void {
+        localStorage.setItem('isLoggedin', 'true');
+        localStorage.setItem('id_token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+    }
+
+    clearUserData(): void {
+        localStorage.clear();
     }
 
     /*
