@@ -10,6 +10,8 @@ import { Observable } from 'rxjs/Observable';
 export class ThingyService {
 
     private thingyDataCompleteUrl = `${AppConfig.apiEndpoint}/user/thingy/data`;
+    private newThingyDataUrl = `${AppConfig.apiEndpoint}/user/thingy/data`;
+    private lastDataUrl = `${AppConfig.apiEndpoint}/user/thingy/lastdata`;
 
     constructor(private http: Http) {
     }
@@ -24,13 +26,36 @@ export class ThingyService {
     }
 
     getThingyDataComplete(): Promise<ThingyData[]> {
-        let headers = new Headers
         return this.http.get(this.thingyDataCompleteUrl, {headers: this.createAuthHeader()})
             .toPromise()
             .then(res => {
                 if (res.ok) {
                     console.log(res.json());
                     return res.json() as ThingyData[];
+                }
+            })
+            .catch(this.handleError);
+    }
+
+    getLastEntry(): Promise<ThingyData> {
+        return this.http.get(this.lastDataUrl, {headers: this.createAuthHeader()})
+            .toPromise()
+            .then(res => {
+                if (res.ok) {
+                    console.log(res.json());
+                    return res.json() as ThingyData;
+                }
+            })
+            .catch(this.handleError);
+    }
+
+    createNewThingyDataset(newThingy: ThingyData): Promise<JSON> {
+        return this.http.post(this.newThingyDataUrl, newThingy, {headers: this.createAuthHeader()})
+            .toPromise()
+            .then(res => {
+                if (res.ok) {
+                    console.log(res.json());
+                    return res.json();
                 }
             })
             .catch(this.handleError);

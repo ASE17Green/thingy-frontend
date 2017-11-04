@@ -69,17 +69,51 @@
         </div>
         -->
 
-        <div class="col col-sm-6">
+        <div class="col col-sm-3">
             <div class="card mb-3">
                 <div class="card-header">
-                    Get Data
+                    Data Randomizer
                 </div>
                 <div class="card-block">
-                    <button class="btn rounded-btn" (click)="getAllData()"> Data pl0x </button>
+                    <button class="btn rounded-btn" (click)="createNewThingy()"> Send Data</button>
+                    <div style="height: 5px"></div>
+                    <button class="btn rounded-btn" (click)="getAllData()"> Get Data</button>
                 </div>
             </div>
         </div>
 
+
+        <div class="col col-sm-9">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Generated Data Table
+                </div>
+                <div class="card-block">
+                    <table class="table">
+                        <tr>
+                            <th>Date</th>
+                            <th>Color</th>
+                            <th>Gas</th>
+                            <th>Gravity</th>
+                            <th>Humidity</th>
+                            <th>Pressure</th>
+                            <th>Temperature</th>
+                        </tr>
+                        <tr *ngFor="let rdm of thingyData">
+                            <td>{{ rdm.date | date: 'dd/MM/yy, hh:mm:ss'}}</td>
+                            <td>{{ rdm.color }}</td>
+                            <td>{{ rdm.gas }}</td>
+                            <td>{{ rdm.gravity }}</td>
+                            <td>{{ rdm.humidity }}</td>
+                            <td>{{ rdm.pressure }}</td>
+                            <td>{{ rdm.temperature }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!--
         <div class="col col-sm-6">
             <div class="card mb-3">
                 <div class="card-header">
@@ -91,5 +125,7 @@
                 </div>
             </div>
         </div>
+        -->
+
     </div>
 </div>

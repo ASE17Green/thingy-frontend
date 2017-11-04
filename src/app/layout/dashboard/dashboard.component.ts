@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
+import { UserService, ThingyService } from '../../shared/services/index';
+import {ThingyData} from '../../shared/models/thingy-data';
 
 @Component({
     selector: 'app-dashboard',
@@ -8,46 +10,32 @@ import { routerTransition } from '../../router.animations';
     animations: [routerTransition()]
 })
 export class DashboardComponent implements OnInit {
-    public alerts: Array<any> = [];
-    public sliders: Array<any> = [];
+    username: string;
+    dataNumber: number;
+    lastThingy: ThingyData;
 
-    constructor() {
-        this.sliders.push({
-            imagePath: 'assets/images/slider1.jpg',
-            label: 'First slide label',
-            text: 'Nulla vitae elit libero, a pharetra augue mollis interdum.'
-        }, {
-            imagePath: 'assets/images/slider2.jpg',
-            label: 'Second slide label',
-            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-        }, {
-            imagePath: 'assets/images/slider3.jpg',
-            label: 'Third slide label',
-            text: 'Praesent commodo cursus magna, vel scelerisque nisl consectetur.'
-        });
+    constructor(private userService: UserService,
+                private thingyService: ThingyService) {
 
-        this.alerts.push({
-            id: 1,
-            type: 'success',
-            message: `Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates est animi quibusdam praesentium quam, et perspiciatis,
-                consectetur velit culpa molestias dignissimos
-                voluptatum veritatis quod aliquam! Rerum placeat necessitatibus, vitae dolorum`
-        }, {
-            id: 2,
-            type: 'warning',
-            message: `Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates est animi quibusdam praesentium quam, et perspiciatis,
-                consectetur velit culpa molestias dignissimos
-                voluptatum veritatis quod aliquam! Rerum placeat necessitatibus, vitae dolorum`
-        });
     }
 
     ngOnInit() {
-    }
+        this.thingyService.getLastEntry().then(
+            (thingyData: ThingyData) => {
+                this.lastThingy = thingyData;
+            },
+            error => {
+                console.log('Something went wrong');
 
-    public closeAlert(alert: any) {
-        const index: number = this.alerts.indexOf(alert);
-        this.alerts.splice(index, 1);
+            });
+        this.thingyService.getThingyDataComplete().then(
+            (thingyData: ThingyData[]) => {
+                this.dataNumber = thingyData.length;
+            },
+            error => {
+                console.log('Something went wrong');
+
+            });
+        this.username = JSON.parse(localStorage.getItem('user')).name;
     }
 }

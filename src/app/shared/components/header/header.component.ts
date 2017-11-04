@@ -11,6 +11,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material';
 export class HeaderComponent implements OnInit {
 
     pushRightClass = 'push-right';
+    username: string;
 
     constructor(public router: Router,
                 private userService: UserService,
@@ -22,7 +23,9 @@ export class HeaderComponent implements OnInit {
         });
     }
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.username = JSON.parse(localStorage.getItem('user')).name;
+    }
 
     isToggled(): boolean {
         const dom: Element = document.querySelector('body');
