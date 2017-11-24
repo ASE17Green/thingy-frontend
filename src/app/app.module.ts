@@ -9,6 +9,8 @@ import {ThingyService} from './shared/services/thingy.service';
 import {UserService} from './shared/services/user.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material';
+import { NgxGaugeModule } from 'ngx-gauge';
+import { AgmCoreModule } from '@agm/core';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: Http) {
@@ -24,7 +26,11 @@ export function HttpLoaderFactory(http: Http) {
         AppRoutingModule,
         FormsModule,
         ReactiveFormsModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        NgxGaugeModule,
+        AgmCoreModule.forRoot({
+            apiKey: 'AIzaSyBkEdBnh3t64muKZxcQS_04gOQYh4nRZCs'
+        })
     ],
     providers: [AuthGuard, UserService, ThingyService],
     bootstrap: [AppComponent],

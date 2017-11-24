@@ -4,12 +4,15 @@ import { CommonModule } from '@angular/common';
 import { TablesComponent } from './tables.component';
 import { TablesRoutingModule } from './tables-routing.module';
 import { PageHeaderModule } from './../../shared';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
     imports: [
         CommonModule,
         TablesRoutingModule,
-        PageHeaderModule
+        PageHeaderModule,
+        FormsModule,
+        ReactiveFormsModule
     ],
     declarations: [TablesComponent]
 })

@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit {
 
     createForm() {
         this.loginForm = this.fb.group({
-            name: ['', Validators.required],
+            email: ['', Validators.required],
             password: ['', Validators.required]
         });
     }
@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
                     console.log('success: ' + jsonData.msg);
                     console.log('token: ' + jsonData.token);
                     this.userService.storeUserData(jsonData.token, jsonData.user)
-                    this.snackbar.open('Welcome, ' + this.user.name, 'close', config);
+                    this.snackbar.open('Welcome, ' + this.user.email, 'close', config);
                     this.router.navigate(['/dashboard']);
                 } else {
                     console.log('fail: ' + jsonData.msg);

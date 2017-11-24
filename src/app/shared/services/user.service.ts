@@ -11,6 +11,8 @@ export class UserService {
     private createUserUrl = `${AppConfig.apiEndpoint}/user/register`;
     private authenticateUserUrl = `${AppConfig.apiEndpoint}/user/authenticate`;
     private getUsersUrl = `${AppConfig.apiEndpoint}/user/`;
+    private updateUserUrl = `${AppConfig.apiEndpoint}/user/update`;
+    private getUserUrl = `${AppConfig.apiEndpoint}/user/profile`;
 
     constructor(private http: Http) { }
 
@@ -18,13 +20,11 @@ export class UserService {
      * CRUD methods
      */
 
-    /*
-    getUsers(): Promise<User[]> {
-        return this.http.get(this.getUsersUrl)
-            .toPromise()
-            .then(response => response.json() as User[])
-            .catch(this.handleError);
-    }*/
+
+    private createAuthHeader(): Headers {
+        let token: string = `${localStorage.getItem('id_token')}`;
+        return new Headers({'Content-Type': 'application/json', 'Authorization': token});
+    }
 
     createUser(newUser: User): Promise<JSON> {
         console.log(newUser);
@@ -38,6 +38,45 @@ export class UserService {
             })
             .catch(this.handleError);
     }
+
+    updateUser(putUser: User): Promise<JSON> {
+
+        const body = JSON.stringify(putUser);
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+
+        console.log("Update User with ID: "+ putUser._id);
+        return this.http.put(this.updateUserUrl, body, { headers: this.createAuthHeader() })
+            .toPromise()
+            .then(res => {
+                if (res.ok) {
+                    console.log(res.json());
+                    return res.json();
+                }
+            })
+            .catch(this.handleError);
+    }
+
+    getUser(): Promise<any> {
+        return this.http.get(this.getUserUrl, { headers: this.createAuthHeader() })
+            .toPromise()
+            .then(res => {
+                return res.json().user as User;
+            })
+            .catch(this.handleError);
+    }
+    /*
+    getUser(): Promise<User> {
+        return this.http.get(this.getUserUrl, {headers: this.createAuthHeader()})
+            .toPromise()
+            .then(response => {
+                if(response.ok) {
+                    console.log(response.json())
+                    return response.json() as User;
+                }
+            })
+            .catch(this.handleError);
+    }*/
 
     authenticateUser(user: User): Promise<JSON> {
         return this.http.post(this.authenticateUserUrl, user)
@@ -62,12 +101,6 @@ export class UserService {
     }
 
     /*
-    getTageler(id: String): Promise<Tageler> {
-        return this.http.get(this.tagelersUrlGetById + '/' + id)
-            .toPromise()
-            .then(response => response.json() as Tageler)
-            .catch(this.handleError);
-    }
 
     // delete("/api/v1/tageler/admin/delete")
     deleteTageler(delTageler: String): Promise<JSON> {
@@ -89,25 +122,8 @@ export class UserService {
             })
             .catch(this.handleError);
     }
-
-    // put("/api/v1/tageler/admin/update")
-    updateTageler(putTageler: Tageler): Promise<JSON> {
-
-        const body = JSON.stringify(putTageler);
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-
-        console.log("Update tageler with ID: "+ putTageler._id);
-        return this.http.put(this.tagelerUrlUpdate+'/'+putTageler._id, body, { headers: headers })
-            .toPromise()
-            .then(res => {
-                if (res.ok) {
-                    return res.json();
-                }
-            })
-            .catch(this.handleError);
-    }
     */
+
 
 
     // error handling

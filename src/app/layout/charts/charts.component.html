@@ -1,73 +1,6 @@
 <div [@routerTransition]>
-    <app-page-header [heading]="'Sensordata Overview'" [icon]="'fa-table'"></app-page-header>
-
-    <!--
+    <app-page-header [heading]="'Sensordata Overview'" [icon]="'fa-bar-chart'"></app-page-header>
     <div class="row">
-        <div class="col col-sm-6">
-            <div class="card mb-3">
-                <div class="card-header">
-                    Bar Chart
-                </div>
-                <div class="card-block">
-                    <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions" [legend]="barChartLegend" [chartType]="barChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)">
-                    </canvas>
-                </div>
-                <div class="card-footer">
-                    <button class="btn btn-info btn-sm" (click)="randomize()">Update</button>
-                </div>
-            </div>
-        </div>
-        <div class="col col-sm-6">
-            <div class="card mb-3">
-                <div class="card-header">
-                    Doughnut Chart
-                </div>
-                <div class="card-block">
-                    <canvas baseChart height="180px" [data]="doughnutChartData" [labels]="doughnutChartLabels" [chartType]="doughnutChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)">
-                    </canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col col-sm-6">
-            <div class="card mb-3">
-                <div class="card-header">
-                    Radar Chart
-                </div>
-                <div class="card-block">
-                    <canvas baseChart height="150px" [datasets]="radarChartData" [labels]="radarChartLabels" [chartType]="radarChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)">
-                    </canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col col-sm-6">
-            <div class="card mb-3">
-                <div class="card-header">
-                    Pie Chart
-                </div>
-                <div class="card-block">
-                    <canvas baseChart height="150px" [data]="pieChartData" [labels]="pieChartLabels" [chartType]="pieChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)">
-                    </canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    -->
-    <div class="row">
-        <!--
-        <div class="col col-sm-6">
-            <div class="card mb-3">
-                <div class="card-header">
-                    Polar Area Chart
-                </div>
-                <div class="card-block">
-                    <canvas baseChart height="130px" [data]="polarAreaChartData" [labels]="polarAreaChartLabels" [legend]="polarAreaLegend" [chartType]="polarAreaChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)">
-                    </canvas>
-                </div>
-            </div>
-        </div>
-        -->
 
         <div class="col col-sm-3">
             <div class="card mb-3">
@@ -127,5 +60,88 @@
         </div>
         -->
 
+    </div>
+
+
+    <div class="row">
+
+        <h3>Mah gauge</h3>
+    </div>
+    <div class="row">
+        <div class="col col-sm-3">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Temperature
+                </div>
+                <ngx-gauge [type]="gaugeType"
+                           [value]="gaugeValue"
+                           [label]="gaugeLabel"
+                           [append]="gaugeAppendText"
+                           [thresholds]="thresholdConfig"
+                           [duration]="1"
+                           [thick]="10">
+                </ngx-gauge>
+            </div>
+        </div>
+        <div class="col col-sm-3">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Air Quality
+                </div>
+                <ngx-gauge [type]="gaugeType"
+                           [value]="gaugeValue"
+                           [label]="gaugeLabel"
+                           [append]="gaugeAppendText"
+                           [thresholds]="thresholdConfig"
+                           [duration]="1"
+                           [thick]="10">
+                </ngx-gauge>
+            </div>
+        </div>
+        <div class="col col-sm-3">
+            <div class="card mb-3">
+                <div class="card-header">
+                    RGB
+                </div>
+                <ngx-gauge [type]="gaugeType"
+                           [value]="gaugeValue"
+                           [label]="gaugeLabel"
+                           [append]="gaugeAppendText"
+                           [thresholds]="thresholdConfig"
+                           [duration]="1"
+                           [thick]="10">
+                </ngx-gauge>
+            </div>
+        </div>
+        <div class="col col-sm-3">
+            <div class="card mb-3">
+                <div class="card-header">
+                    LoL
+                </div>
+                <ngx-gauge [type]="gaugeType"
+                           [value]="gaugeValue"
+                           [label]="gaugeLabel"
+                           [append]="gaugeAppendText"
+                           [thresholds]="thresholdConfig"
+                           [duration]="1"
+                           [thick]="10">
+                </ngx-gauge>
+            </div>
+        </div>
+        <div class="col col-sm-6">
+            <button class="btn rounded-btn" (click)="RandomizeGauge()">Dynamic flu/hr generator</button>
+        </div>
+    </div>
+    <div class="row">
+        <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12">
+            <agm-marker [latitude]="latMarker" [longitude]="lngMarker"></agm-marker>
+            <!--
+            <agm-polyline>
+                <agm-polyline-point [latitude]="latPoly1" [longitude]="lngPoly1"></agm-polyline-point>
+                <agm-polyline-point [latitude]="latPoly2" [longitude]="lngPoly2"></agm-polyline-point>
+                <agm-polyline-point [latitude]="latPoly3" [longitude]="lngPoly3"></agm-polyline-point>
+            </agm-polyline>
+            -->
+        </agm-map>
     </div>
 </div>
