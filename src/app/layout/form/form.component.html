@@ -1,10 +1,31 @@
 <div [@routerTransition]>
     <app-page-header [heading]="'Set Intervals'" [icon]="'fa-sliders'"></app-page-header>
+    <form [formGroup]="intervalForm">
+        <div class="form-content">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col col-sm-6" *ngFor="let thingy of user.thingysID">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                {{thingy}}
+                            </div>
+                                <div style="height:5px"></div>
+                                <input type="number" class="form-control input-underline input-lg"
+                                       id="maxTemp-{{thingy}}" placeholder="Max Temperature" required>
+                                <div style="height:5px"></div>
+                                <input type="number" class="form-control input-underline input-lg"
+                                       id="minTemp-{{thingy}}" placeholder="Min Temperature" required>
 
-    <div class="row">
-        <div class="col-lg-6">
-            asdf
+                                <div class="col col-sm-3">
+                                    <button class="btn rounded-btn" [disabled]="!intervalForm.valid"
+                                            (click)="onSetIntervals()"> Save
+                                    </button>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div>
         </div>
-    </div>
-    <!-- /.row -->
+    </form>
 </div>

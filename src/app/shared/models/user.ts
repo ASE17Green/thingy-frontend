@@ -8,4 +8,9 @@ export class User {
     password: string;
 
     thingysID: string[];
+
+    thingysMinTemperature: string[];
+    thingysMaxTemperature: string[];
+
+    endLocations: number[];
 }

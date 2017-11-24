@@ -1,22 +1,7 @@
 <div [@routerTransition]>
     <app-page-header [heading]="'Sensordata Overview'" [icon]="'fa-bar-chart'"></app-page-header>
     <div class="row">
-
-        <div class="col col-sm-3">
-            <div class="card mb-3">
-                <div class="card-header">
-                    Data Randomizer
-                </div>
-                <div class="card-block">
-                    <button class="btn rounded-btn" (click)="createNewThingy()"> Send Data</button>
-                    <div style="height: 5px"></div>
-                    <button class="btn rounded-btn" (click)="getAllData()"> Get Data</button>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="col col-sm-9">
+        <div class="col col-sm-12">
             <div class="card mb-3">
                 <div class="card-header">
                     Generated Data Table
@@ -45,27 +30,11 @@
                 </div>
             </div>
         </div>
-
-        <!--
-        <div class="col col-sm-6">
-            <div class="card mb-3">
-                <div class="card-header">
-                    Line Chart
-                </div>
-                <div class="card-block">
-                    <canvas baseChart height="130" [datasets]="lineChartData" [labels]="lineChartLabels" [options]="lineChartOptions" [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)">
-                    </canvas>
-                </div>
-            </div>
-        </div>
-        -->
-
     </div>
 
 
     <div class="row">
 
-        <h3>Mah gauge</h3>
     </div>
     <div class="row">
         <div class="col col-sm-3">
@@ -128,20 +97,36 @@
                 </ngx-gauge>
             </div>
         </div>
-        <div class="col col-sm-6">
-            <button class="btn rounded-btn" (click)="RandomizeGauge()">Dynamic flu/hr generator</button>
-        </div>
     </div>
     <div class="row">
-        <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12">
-            <agm-marker [latitude]="latMarker" [longitude]="lngMarker"></agm-marker>
-            <!--
-            <agm-polyline>
-                <agm-polyline-point [latitude]="latPoly1" [longitude]="lngPoly1"></agm-polyline-point>
-                <agm-polyline-point [latitude]="latPoly2" [longitude]="lngPoly2"></agm-polyline-point>
-                <agm-polyline-point [latitude]="latPoly3" [longitude]="lngPoly3"></agm-polyline-point>
-            </agm-polyline>
-            -->
-        </agm-map>
+        <div class="col-sm-9">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Current Location
+                </div>
+                <div class="card-block">
+                    <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12">
+                        <agm-marker [latitude]="latMarker" [longitude]="lngMarker"></agm-marker>
+                        <!--
+                        <agm-polyline>
+                            <agm-polyline-point [latitude]="latPoly1" [longitude]="lngPoly1"></agm-polyline-point>
+                            <agm-polyline-point [latitude]="latPoly2" [longitude]="lngPoly2"></agm-polyline-point>
+                            <agm-polyline-point [latitude]="latPoly3" [longitude]="lngPoly3"></agm-polyline-point>
+                        </agm-polyline>
+                        -->
+                    </agm-map>
+                </div>
+            </div>
+        </div>
+        <div class="col col-sm-3">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Data Randomizer
+                </div>
+                <div class="card-block">
+                    <button class="btn rounded-btn" (click)="RandomizeGauge()">Randomize</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

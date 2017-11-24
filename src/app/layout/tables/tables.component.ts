@@ -37,11 +37,9 @@ export class TablesComponent implements OnInit {
 
         this.userService.getUser().then(
             data => {
-                console.log('raw: ' + data);
                 this.user = data;
             },
             error => {
-                console.log('Something went wrong');
                 this.snackbar.open('Something went wrong. Please contact an admin', 'close', config);
                 this.router.navigate(['/login']);
             });
