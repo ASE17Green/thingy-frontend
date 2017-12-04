@@ -19,8 +19,10 @@ export class ChartsComponent implements OnInit, OnChanges {
     thingyData: ThingyData[];
     randomThingy = new ThingyData();
 
+    // table sorting and pagination stuff
     key: string = 'date';
     reverse: boolean = false;
+    p: number = 1;
 
     title: string = 'My first AGM project';
     latMap: number = 51.678418;

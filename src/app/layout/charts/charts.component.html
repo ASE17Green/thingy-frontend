@@ -46,7 +46,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let thingy of thingyData | orderBy: key : reverse">
+                            <tr *ngFor="let thingy of thingyData | orderBy: key : reverse | paginate: { itemsPerPage: 5, currentPage: p }">
                                 <td>{{ thingy.date | date: 'dd/MM/yy, hh:mm:ss'}}</td>
                                 <td>{{ thingy.thingyID }}</td>
                                 <td>{{ thingy.user?.email }}</td>
@@ -70,6 +70,7 @@
                                 <td>{{ thingy.longitude }}</td>
                             </tr>
                         </tbody>
+                        <pagination-controls (pageChange)="p = $event"></pagination-controls>
                     </table>
                 </div>
             </div>

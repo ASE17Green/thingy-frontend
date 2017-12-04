@@ -38,6 +38,7 @@
         "ng2-charts": "^1.6.0",
         "ng2-order-pipe": "^0.1.5",
         "ngx-gauge": "^1.0.0-beta",
+        "ngx-pagination": "^3.0.3",
         "rxjs": "^5.4.3",
         "zone.js": "^0.8.17"
     },

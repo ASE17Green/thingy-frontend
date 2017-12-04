@@ -12,6 +12,7 @@ import { MatSnackBarModule } from '@angular/material';
 import { NgxGaugeModule } from 'ngx-gauge';
 import { AgmCoreModule } from '@agm/core';
 import { Ng2OrderModule } from 'ng2-order-pipe';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: Http) {
@@ -30,6 +31,7 @@ export function HttpLoaderFactory(http: Http) {
         MatSnackBarModule,
         NgxGaugeModule,
         Ng2OrderModule,
+        NgxPaginationModule,
         AgmCoreModule.forRoot({
             apiKey: 'AIzaSyBkEdBnh3t64muKZxcQS_04gOQYh4nRZCs'
         })
