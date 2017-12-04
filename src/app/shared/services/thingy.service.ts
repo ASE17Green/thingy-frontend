@@ -30,19 +30,17 @@ export class ThingyService {
             .toPromise()
             .then(res => {
                 if (res.ok) {
-                    console.log(res.json());
                     return res.json() as ThingyData[];
                 }
             })
             .catch(this.handleError);
     }
 
-    getLastEntry(): Promise<ThingyData> {
-        return this.http.get(this.lastThingyByIdUrl, {headers: this.createAuthHeader()})
+    getLastEntry(id: String): Promise<ThingyData> {
+        return this.http.get(this.lastThingyByIdUrl + '/' + id, {headers: this.createAuthHeader()})
             .toPromise()
             .then(res => {
                 if (res.ok) {
-                    console.log(res.json());
                     return res.json() as ThingyData;
                 }
             })

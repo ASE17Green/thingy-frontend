@@ -27,7 +27,11 @@
                                     'fa-sort-desc':!reverse && key =='pressure', 'fa-sort': key != 'pressure'}">
                                     </span>
                                 </th>
-                                <th>Humidity</th>
+                                <th (click)="sort('humidity')">Humidity
+                                    <span class="fa" [ngClass]="{'fa-sort-asc':reverse && key =='humidity',
+                                    'fa-sort-desc':!reverse && key =='humidity', 'fa-sort': key != 'humidity'}">
+                                    </span>
+                                </th>
                                 <th>Eco2</th>
                                 <th>Tvoc</th>
                                 <th>Color Red</th>
@@ -46,7 +50,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let thingy of thingyData | orderBy: key : reverse | paginate: { itemsPerPage: 5, currentPage: p }">
+                            <tr *ngFor="let thingy of thingyData | orderBy: key : reverse
+                            | paginate: { itemsPerPage: 5, currentPage: p }">
                                 <td>{{ thingy.date | date: 'dd/MM/yy, hh:mm:ss'}}</td>
                                 <td>{{ thingy.thingyID }}</td>
                                 <td>{{ thingy.user?.email }}</td>

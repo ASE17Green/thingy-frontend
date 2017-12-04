@@ -17,7 +17,9 @@ import * as $ from 'jquery';
 })
 export class ChartsComponent implements OnInit, OnChanges {
     thingyData: ThingyData[];
-    randomThingy = new ThingyData();
+
+    // alert settings
+    config = new MatSnackBarConfig();
 
     // table sorting and pagination stuff
     key: string = 'date';
@@ -53,7 +55,7 @@ export class ChartsComponent implements OnInit, OnChanges {
     constructor(private thingyService: ThingyService,
                 private snackbar: MatSnackBar,
                 private router: Router) {
-        let refreshInterval = setInterval(() => { this.refreshData(); }, 1000);
+        let refreshInterval = setInterval(() => { this.refreshData(); }, 5000);
         router.events.forEach((event) => {
             if (event instanceof NavigationStart) {
                 clearInterval(refreshInterval);
@@ -62,10 +64,13 @@ export class ChartsComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
+        // alert settings
+        this.config.extraClasses = ['snackbar-design'];
+        this.config.duration = 3000;
+
         this.latMap = this.latMarker = this.randomNumberFromInterval(40, 50);
         this.lngMap = this.lngMarker = this.randomNumberFromInterval(7, 8);
         this.getAllData();
-
     }
 
     ngOnChanges() {
@@ -78,35 +83,35 @@ export class ChartsComponent implements OnInit, OnChanges {
     }
 
     RandomizeGauge(): void {
-        $('#test').hide();
-
         this.gaugeValue = this.randomNumberFromInterval(0, 100);
         this.latMarker += this.randomNumberFromInterval(-1, 1) / 1000;
         this.lngMarker += this.randomNumberFromInterval(-1, 1) / 1000;
     }
 
     refreshData(): void {
-        console.log('works');
+        this.thingyService.getThingyById('EB:10:8E:F0:E0:C3').then(
+            (thingyData: ThingyData[]) => {
+                this.thingyData = thingyData;
+                // filter empty date columns
+                this.thingyData = this.thingyData.filter(function(n){ return n.date != undefined });
+                this.snackbar.open('Request successful', 'close', this.config);
+            },
+            error => {
+                 this.snackbar.open('No thingy data available.', 'close', this.config);
+            });
     }
 
     getAllData(): void {
-        // alert settings
-        let config = new MatSnackBarConfig();
-        config.extraClasses = ['snackbar-design'];
-        config.duration = 3000;
 
         this.thingyService.getThingyById('EB:10:8E:F0:E0:C3').then(
             (thingyData: ThingyData[]) => {
                 this.thingyData = thingyData;
-                console.log(this.thingyData);
-                this.snackbar.open('Request successful', 'close', config);
+                // filter empty date columns
+                this.thingyData = this.thingyData.filter(function(n){ return n.date != undefined });
+                this.snackbar.open('Request successful', 'close', this.config);
             },
             error => {
-                console.log('Something went wrong');
-                /*
-                 this.snackbar.open('Something went wrong. Please contact an admin', 'close', config);
-                 this.router.navigate(['/signup']);
-                 */
+                 this.snackbar.open('No thingy data available.', 'close', this.config);
             });
     }
 
