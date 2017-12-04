@@ -6,6 +6,8 @@ import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@ang
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material';
 import { User } from '../../shared/models/user';
 
+declare const jQuery: any;
+
 @Component({
     selector: 'app-tables',
     templateUrl: './tables.component.html',
@@ -38,6 +40,7 @@ export class TablesComponent implements OnInit {
         this.userService.getUser().then(
             data => {
                 this.user = data;
+                console.log(data);
             },
             error => {
                 this.snackbar.open('Something went wrong. Please contact an admin', 'close', config);

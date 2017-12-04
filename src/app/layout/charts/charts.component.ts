@@ -1,10 +1,13 @@
 import {Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation} from '@angular/core';
 import {routerTransition} from '../../router.animations';
-import {ThingyService} from '../../shared/services/index';
+import {ThingyService, UserService} from '../../shared/services/index';
 import {ThingyData} from '../../shared/models/thingy-data';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
 import { RouterModule, Routes, Router, NavigationStart } from '@angular/router';
+import { User } from '../../shared/models/user';
 import * as d3 from 'd3';
+
+import * as $ from 'jquery';
 
 @Component({
     selector: 'app-charts',
@@ -15,6 +18,9 @@ import * as d3 from 'd3';
 export class ChartsComponent implements OnInit, OnChanges {
     thingyData: ThingyData[];
     randomThingy = new ThingyData();
+
+    key: string = 'date';
+    reverse: boolean = false;
 
     title: string = 'My first AGM project';
     latMap: number = 51.678418;
@@ -54,9 +60,9 @@ export class ChartsComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-
         this.latMap = this.latMarker = this.randomNumberFromInterval(40, 50);
         this.lngMap = this.lngMarker = this.randomNumberFromInterval(7, 8);
+        this.getAllData();
 
     }
 
@@ -64,7 +70,14 @@ export class ChartsComponent implements OnInit, OnChanges {
 
     }
 
+    sort(key){
+        this.key = key;
+        this.reverse = !this.reverse;
+    }
+
     RandomizeGauge(): void {
+        $('#test').hide();
+
         this.gaugeValue = this.randomNumberFromInterval(0, 100);
         this.latMarker += this.randomNumberFromInterval(-1, 1) / 1000;
         this.lngMarker += this.randomNumberFromInterval(-1, 1) / 1000;
@@ -80,7 +93,7 @@ export class ChartsComponent implements OnInit, OnChanges {
         config.extraClasses = ['snackbar-design'];
         config.duration = 3000;
 
-        this.thingyService.getThingyDataComplete().then(
+        this.thingyService.getThingyById('EB:10:8E:F0:E0:C3').then(
             (thingyData: ThingyData[]) => {
                 this.thingyData = thingyData;
                 console.log(this.thingyData);
@@ -93,37 +106,6 @@ export class ChartsComponent implements OnInit, OnChanges {
                  this.router.navigate(['/signup']);
                  */
             });
-    }
-
-    createNewThingy(): void {
-        // alert settings
-        let config = new MatSnackBarConfig();
-        config.extraClasses = ['snackbar-design'];
-        config.duration = 3000;
-
-        // generate random testdata
-        this.randomThingy.color = this.randomNumberFromInterval(1, 255);
-        this.randomThingy.date = new Date();
-        this.randomThingy.gravity = this.randomNumberFromInterval(0, 9.81);
-        this.randomThingy.humidity = this.randomNumberFromInterval(0, 100);
-        this.randomThingy.temperature = this.randomNumberFromInterval(0, 40);
-        this.randomThingy.gas = this.randomNumberFromInterval(0, 50);
-        this.randomThingy.pressure = this.randomNumberFromInterval(0, 50);
-
-        this.thingyService.createNewThingyDataset(this.randomThingy).then(
-            data => {
-                const jsonData = JSON.parse(JSON.stringify(data));
-                // this is just for testing
-                this.snackbar.open('New ThingyData added', 'close', config);
-            },
-            error => {
-                console.log('Something went wrong');
-                /*
-                 this.snackbar.open('Something went wrong. Please contact an admin', 'close', config);
-                 this.router.navigate(['/signup']);
-                 */
-            });
-
     }
 
 

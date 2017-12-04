@@ -28,7 +28,7 @@ export class DashboardComponent implements OnInit {
                 console.log('Something went wrong');
 
             });
-        this.thingyService.getThingyDataComplete().then(
+        this.thingyService.getThingyById('EB:10:8E:F0:E0:C3').then(
             (thingyData: ThingyData[]) => {
                 this.dataNumber = thingyData.length;
             },

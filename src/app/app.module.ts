@@ -11,6 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material';
 import { NgxGaugeModule } from 'ngx-gauge';
 import { AgmCoreModule } from '@agm/core';
+import { Ng2OrderModule } from 'ng2-order-pipe';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: Http) {
@@ -28,6 +29,7 @@ export function HttpLoaderFactory(http: Http) {
         ReactiveFormsModule,
         MatSnackBarModule,
         NgxGaugeModule,
+        Ng2OrderModule,
         AgmCoreModule.forRoot({
             apiKey: 'AIzaSyBkEdBnh3t64muKZxcQS_04gOQYh4nRZCs'
         })

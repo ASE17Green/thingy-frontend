@@ -9,9 +9,9 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class ThingyService {
 
-    private thingyDataCompleteUrl = `${AppConfig.apiEndpoint}/user/thingy/data`;
+    private thingyByIdUrl = `${AppConfig.apiEndpoint}/user/thingy/data`;
     private newThingyDataUrl = `${AppConfig.apiEndpoint}/user/thingy/data`;
-    private lastDataUrl = `${AppConfig.apiEndpoint}/user/thingy/lastdata`;
+    private lastThingyByIdUrl = `${AppConfig.apiEndpoint}/user/thingy/lastdata`;
 
     constructor(private http: Http) {
     }
@@ -25,8 +25,8 @@ export class ThingyService {
         return new Headers({'Content-Type': 'application/json', 'Authorization': token});
     }
 
-    getThingyDataComplete(): Promise<ThingyData[]> {
-        return this.http.get(this.thingyDataCompleteUrl, {headers: this.createAuthHeader()})
+    getThingyById(id: String): Promise<ThingyData[]> {
+        return this.http.get(this.thingyByIdUrl + '/' + id, {headers: this.createAuthHeader()})
             .toPromise()
             .then(res => {
                 if (res.ok) {
@@ -38,7 +38,7 @@ export class ThingyService {
     }
 
     getLastEntry(): Promise<ThingyData> {
-        return this.http.get(this.lastDataUrl, {headers: this.createAuthHeader()})
+        return this.http.get(this.lastThingyByIdUrl, {headers: this.createAuthHeader()})
             .toPromise()
             .then(res => {
                 if (res.ok) {
