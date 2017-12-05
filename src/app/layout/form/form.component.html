@@ -1,20 +1,28 @@
 <div [@routerTransition]>
     <app-page-header [heading]="'Set Intervals'" [icon]="'fa-sliders'"></app-page-header>
-    <form [formGroup]="intervalForm">
+    <form [formGroup]="userthingyForm">
         <div class="form-content">
             <div class="form-group">
                 <div class="row">
-                    <div class="col col-sm-6" *ngFor="let thingy of user.thingysID">
+                    <div class="col col-sm-6" *ngFor="let userthingy of userthingys">
                         <div class="card mb-3">
                             <div class="card-header">
-                                {{thingy}}
+                                {{userthingy.thingyID}}
                             </div>
                                 <div style="height:5px"></div>
-                                <input type="number" class="form-control input-underline input-lg"
-                                       id="maxTemp-{{thingy}}" placeholder="Max Temperature" required>
-                                <div style="height:5px"></div>
-                                <input type="number" class="form-control input-underline input-lg"
-                                       id="minTemp-{{thingy}}" placeholder="Min Temperature" required>
+                            <div class="form-content">
+                                <div class="form-group">
+                                    <input type="text" class="form-control input-underline input-lg" formControlName="thingyMaxTemperature"
+                                           id="thingyMaxTemperature" placeholder="New thingyMaxTemperature" [(ngModel)]="userthingy.thingyMaxTemperature" required>
+                                    <input type="text" class="form-control input-underline input-lg" formControlName="thingyMinTemperature"
+                                           id="thingyMinTemperature" placeholder="New thingyMinTemperature" [(ngModel)]="userthingy.thingyMinTemperature" required>
+                                    <input type="text" class="form-control input-underline input-lg" formControlName="endLatitude"
+                                           id="endLatitude" placeholder="New thingy endLatitude" [(ngModel)]="userthingy.endLatitude" required>
+                                    <input type="text" class="form-control input-underline input-lg" formControlName="endLongitude"
+                                           id="endLongitude" placeholder="New thingy endLongitude" [(ngModel)]="userthingy.endLongitude" required>
+                                </div>
+
+                            </div>
 
                                 <div class="col col-sm-3">
                                     <button class="btn rounded-btn" [disabled]="!intervalForm.valid"
@@ -22,6 +30,9 @@
                                     </button>
                                 </div>
                         </div>
+                    </div>
+                    <div *ngIf="!user.thingysID">
+                        You currently don't own any thingys.
                     </div>
                 </div>
                 <!-- /.row -->

@@ -10,12 +10,21 @@
                 <form [formGroup]="newThingyForm">
                     <div class="form-content">
                         <div class="form-group">
-                            <input type="text" class="form-control input-underline input-lg" formControlName="thingyId"
-                                   id="thingyId" placeholder="New thingy id" [(ngModel)]="newThingyId" required>
+                            <input type="text" class="form-control input-underline input-lg" formControlName="thingyID"
+                                   id="thingyID" placeholder="New thingy id" [(ngModel)]="userthingy.thingyID" required>
+                            <input type="text" class="form-control input-underline input-lg" formControlName="thingyMaxTemperature"
+                                   id="thingyMaxTemperature" placeholder="New thingyMaxTemperature" [(ngModel)]="userthingy.thingyMaxTemperature" required>
+                            <input type="text" class="form-control input-underline input-lg" formControlName="thingyMinTemperature"
+                                   id="thingyMinTemperature" placeholder="New thingyMinTemperature" [(ngModel)]="userthingy.thingyMinTemperature" required>
+                            <input type="text" class="form-control input-underline input-lg" formControlName="endLatitude"
+                                   id="endLatitude" placeholder="New thingy endLatitude" [(ngModel)]="userthingy.endLatitude" required>
+                            <input type="text" class="form-control input-underline input-lg" formControlName="endLongitude"
+                                   id="endLongitude" placeholder="New thingy endLongitude" [(ngModel)]="userthingy.endLongitude" required>
                         </div>
 
                     </div>
-                    <button class="btn rounded-btn pull-right" [disabled]="!newThingyForm.valid" (click)="onAddThingy()"> Add </button>&nbsp;
+                    <button class="btn rounded-btn pull-right" [disabled]="!newThingyForm.valid" (click)="onAddThingy()"> Add </button>
+                    <button class="btn rounded-btn pull-right" (click)="onDeleteAll()"> Delete User (!) </button>&nbsp;
                 </form>
             </div>
         </div>

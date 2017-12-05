@@ -5,8 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthGuard } from './shared';
-import {ThingyService} from './shared/services/thingy.service';
-import {UserService} from './shared/services/user.service';
+import { ThingyService, UserthingyService, UserService } from './shared/services/index';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material';
 import { NgxGaugeModule } from 'ngx-gauge';
@@ -36,7 +35,7 @@ export function HttpLoaderFactory(http: Http) {
             apiKey: 'AIzaSyBkEdBnh3t64muKZxcQS_04gOQYh4nRZCs'
         })
     ],
-    providers: [AuthGuard, UserService, ThingyService],
+    providers: [AuthGuard, UserService, ThingyService, UserthingyService],
     bootstrap: [AppComponent],
     exports: [
         FormsModule,

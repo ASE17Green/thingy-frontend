@@ -3,13 +3,14 @@
 
         <h4>
         Hi!<br/>
-        You currently have {{dataNumber}} entries in your Thingy History.<br/>
         <span *ngIf="dataNumber && dataNumber>0">
-        Your last entry was at {{lastThingy?.date | date: 'dd/MM/yy, hh:mm:ss'}}.<br/>
-        These are the sensor data:<br/>
+            You currently have {{dataNumber}} entries in your Thingy History.<br/>
+            Your last entry was at {{lastThingy?.date | date: 'dd/MM/yy, hh:mm:ss'}}.<br/>
+            These are the sensor data:<br/>
         </span>
         <span *ngIf="!dataNumber || dataNumber<=0">
-        Go to Sensordata Overview to simulate some data!<br/>
+            You currently don't own any thingys. <br/>
+            Click <a [routerLink]="['/tables']">here</a> to add a new thingy!<br/>
         </span>
         </h4>
     <ng-container *ngIf="dataNumber && dataNumber!=0">

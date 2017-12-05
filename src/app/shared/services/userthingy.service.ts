@@ -31,13 +31,16 @@ export class UserthingyService {
             .toPromise()
             .then(res => {
                 if (res.ok) {
+                    console.log('id: ' + id);
+                    let test = res.json() as Userthingy;
+                    console.log('response: ' + JSON.stringify(test));
                     return res.json() as Userthingy;
                 }
             })
             .catch(this.handleError);
     }
 
-    createNewThingyDataset(newUserthingy: Userthingy): Promise<JSON> {
+    addUserthingy(newUserthingy: Userthingy): Promise<JSON> {
         return this.http.post(this.addUserthingyUrl, newUserthingy, {headers: this.createAuthHeader()})
             .toPromise()
             .then(res => {
@@ -48,7 +51,7 @@ export class UserthingyService {
             .catch(this.handleError);
     }
 
-    updateUser(putUserthingy: Userthingy): Promise<JSON> {
+    updateUserthingy(putUserthingy: Userthingy): Promise<JSON> {
         const body = JSON.stringify(putUserthingy);
 
         return this.http.put(this.updateUserthingyUrl + '/' + putUserthingy._id, body, { headers: this.createAuthHeader() })

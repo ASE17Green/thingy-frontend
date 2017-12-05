@@ -33,24 +33,28 @@ export class DashboardComponent implements OnInit {
                 return null;
             }).then(
             () => {
-                this.thingyService.getLastEntry(this.user.thingysID[0]).then(
-                    (thingyData: ThingyData) => {
-                        this.lastThingy = thingyData;
-                    },
-                    error => {
-                        console.log('Something went wrong');
-                    });
+                if (this.user.thingysID) {
+                    this.thingyService.getLastEntry(this.user.thingysID[0]).then(
+                        (thingyData: ThingyData) => {
+                            this.lastThingy = thingyData;
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                        });
+                }
             }
         ).then(
             () => {
-                this.thingyService.getThingyById(this.user.thingysID[0]).then(
-                    (thingyData: ThingyData[]) => {
-                        this.dataNumber = thingyData.length;
-                    },
-                    error => {
-                        console.log('Something went wrong');
+                if (this.user.thingysID) {
+                    this.thingyService.getThingyById(this.user.thingysID[0]).then(
+                        (thingyData: ThingyData[]) => {
+                            this.dataNumber = thingyData.length;
+                        },
+                        error => {
+                            console.log('Something went wrong');
 
-                    });
+                        });
+                }
             }
         );
 

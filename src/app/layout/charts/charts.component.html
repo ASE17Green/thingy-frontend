@@ -92,11 +92,11 @@
                 <div class="card-header">
                     Temperature
                 </div>
-                <ngx-gauge [type]="gaugeType"
-                           [value]="gaugeValue"
-                           [label]="gaugeLabel"
-                           [append]="gaugeAppendText"
-                           [thresholds]="thresholdConfig"
+                <ngx-gauge [type]="gaugeDefType"
+                           [value]="gaugeTempValue"
+                           [label]="gaugeTempLabel"
+                           [append]="gaugeTempAppendText"
+                           [thresholds]="gaugeDefThresholdConfig"
                            [duration]="1"
                            [thick]="10">
                 </ngx-gauge>
@@ -105,13 +105,13 @@
         <div class="col col-sm-3">
             <div class="card mb-3">
                 <div class="card-header">
-                    Air Quality
+                    Pressure
                 </div>
-                <ngx-gauge [type]="gaugeType"
-                           [value]="gaugeValue"
-                           [label]="gaugeLabel"
-                           [append]="gaugeAppendText"
-                           [thresholds]="thresholdConfig"
+                <ngx-gauge [type]="gaugeDefType"
+                           [value]="gaugePressValue"
+                           [label]="gaugePressLabel"
+                           [append]="gaugePressAppendText"
+                           [thresholds]="gaugeDefThresholdConfig"
                            [duration]="1"
                            [thick]="10">
                 </ngx-gauge>
@@ -120,28 +120,13 @@
         <div class="col col-sm-3">
             <div class="card mb-3">
                 <div class="card-header">
-                    RGB
+                    Humidity
                 </div>
-                <ngx-gauge [type]="gaugeType"
-                           [value]="gaugeValue"
-                           [label]="gaugeLabel"
-                           [append]="gaugeAppendText"
-                           [thresholds]="thresholdConfig"
-                           [duration]="1"
-                           [thick]="10">
-                </ngx-gauge>
-            </div>
-        </div>
-        <div class="col col-sm-3">
-            <div class="card mb-3">
-                <div class="card-header">
-                    LoL
-                </div>
-                <ngx-gauge [type]="gaugeType"
-                           [value]="gaugeValue"
-                           [label]="gaugeLabel"
-                           [append]="gaugeAppendText"
-                           [thresholds]="thresholdConfig"
+                <ngx-gauge [type]="gaugeDefType"
+                           [value]="gaugeHumValue"
+                           [label]="gaugeHumLabel"
+                           [append]="gaugeHumAppendText"
+                           [thresholds]="gaugeDefThresholdConfig"
                            [duration]="1"
                            [thick]="10">
                 </ngx-gauge>

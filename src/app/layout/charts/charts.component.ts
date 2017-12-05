@@ -16,7 +16,9 @@ import * as $ from 'jquery';
     animations: [routerTransition()],
 })
 export class ChartsComponent implements OnInit, OnChanges {
+    user: User;
     thingyData: ThingyData[];
+    lastThingy: ThingyData;
 
     // alert settings
     config = new MatSnackBarConfig();
@@ -40,11 +42,11 @@ export class ChartsComponent implements OnInit, OnChanges {
     lngPoly2: number = 8.909007;
     lngPoly3: number = 9.309007;
 
-    gaugeType = "arch";
-    gaugeValue = 28.3;
-    gaugeLabel = "Flurins";
-    gaugeAppendText = "m/s";
-    thresholdConfig = {
+    gaugeDefType = "arch";
+    gaugeDefValue = 28;
+    gaugeDefLabel = "Flurins";
+    gaugeDefAppendText = "m/s";
+    gaugeDefThresholdConfig = {
         '0': {color: 'red'},
         '10': {color: 'orange'},
         '20': {color: 'green'},
@@ -52,10 +54,38 @@ export class ChartsComponent implements OnInit, OnChanges {
         '90': {color: 'red'}
     };
 
+    gaugeTempValue = 0;
+    gaugeTempLabel = "Temperature";
+    gaugeTempAppendText = "°C";
+    gaugeTempThresholdConfig = {
+        '0': {color: 'red'},
+        '10': {color: 'orange'},
+        '20': {color: 'green'},
+        '80': {color: 'orange'},
+        '90': {color: 'red'}
+    };
+
+    gaugePressValue = 0;
+    gaugePressLabel = "Pressure";
+    gaugePressAppendText = "Pascal";
+
+    gaugeHumValue = 0;
+    gaugeHumLabel = "Humidity";
+    gaugeHumAppendText = "%";
+
+
+
     constructor(private thingyService: ThingyService,
+                private userService: UserService,
                 private snackbar: MatSnackBar,
                 private router: Router) {
-        let refreshInterval = setInterval(() => { this.refreshData(); }, 5000);
+        // alert settings
+        this.config.extraClasses = ['snackbar-design'];
+        this.config.duration = 3000;
+
+        this.getAllData();
+
+        const refreshInterval = setInterval(() => { this.refreshData(); }, 5000);
         router.events.forEach((event) => {
             if (event instanceof NavigationStart) {
                 clearInterval(refreshInterval);
@@ -64,13 +94,10 @@ export class ChartsComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-        // alert settings
-        this.config.extraClasses = ['snackbar-design'];
-        this.config.duration = 3000;
 
         this.latMap = this.latMarker = this.randomNumberFromInterval(40, 50);
         this.lngMap = this.lngMarker = this.randomNumberFromInterval(7, 8);
-        this.getAllData();
+
     }
 
     ngOnChanges() {
@@ -82,37 +109,83 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.reverse = !this.reverse;
     }
 
+    initGraphs(): void {
+        this.gaugeTempValue = this.lastThingy.temperature;
+        this.gaugePressValue = this.lastThingy.pressure;
+        this.gaugeHumValue = this.lastThingy.humidity;
+    }
+
     RandomizeGauge(): void {
-        this.gaugeValue = this.randomNumberFromInterval(0, 100);
         this.latMarker += this.randomNumberFromInterval(-1, 1) / 1000;
         this.lngMarker += this.randomNumberFromInterval(-1, 1) / 1000;
     }
 
     refreshData(): void {
-        this.thingyService.getThingyById('EB:10:8E:F0:E0:C3').then(
-            (thingyData: ThingyData[]) => {
-                this.thingyData = thingyData;
-                // filter empty date columns
-                this.thingyData = this.thingyData.filter(function(n){ return n.date != undefined });
-                this.snackbar.open('Request successful', 'close', this.config);
-            },
-            error => {
-                 this.snackbar.open('No thingy data available.', 'close', this.config);
-            });
+        // EB:10:8E:F0:E0:C3
+        // this.user.thingysID[0]
+
+        if (this.user.thingysID) {
+            this.thingyService.getThingyById(this.user.thingysID[0]).then(
+                (thingyData: ThingyData[]) => {
+                    this.thingyData = thingyData;
+                    // filter empty date columns
+                    this.thingyData = this.thingyData.filter(function(n){ return n.date != undefined });
+                    this.snackbar.open('Request successful', 'close', this.config);
+                },
+                error => {
+                    this.snackbar.open('No thingy data available.', 'close', this.config);
+                }).then(
+                () => {
+                    this.thingyService.getLastEntry(this.user.thingysID[0]).then(
+                        (thingyData: ThingyData) => {
+                            this.lastThingy = thingyData;
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                        });
+                }
+            );
+        }
     }
 
     getAllData(): void {
-
-        this.thingyService.getThingyById('EB:10:8E:F0:E0:C3').then(
-            (thingyData: ThingyData[]) => {
-                this.thingyData = thingyData;
-                // filter empty date columns
-                this.thingyData = this.thingyData.filter(function(n){ return n.date != undefined });
-                this.snackbar.open('Request successful', 'close', this.config);
+        this.userService.getUser().then(
+            (userData: User) => {
+                this.user = userData;
+                console.log('inside: ' + this.user);
+                return this.user;
             },
             error => {
-                 this.snackbar.open('No thingy data available.', 'close', this.config);
-            });
+                console.log('Something went wrong');
+                return null;
+            }).then(
+            () => {
+                if (this.user.thingysID) {
+                    this.thingyService.getLastEntry(this.user.thingysID[0]).then(
+                        (thingyData: ThingyData) => {
+                            this.lastThingy = thingyData;
+                            this.initGraphs();
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                        });
+                }
+            }
+        ).then(
+            () => {
+                if (this.user.thingysID) {
+                    this.thingyService.getThingyById(this.user.thingysID[0]).then(
+                        (thingyData: ThingyData[]) => {
+                            this.thingyData = thingyData;
+                            this.snackbar.open('Request successful', 'close', this.config);
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                            this.snackbar.open('No thingy data available.', 'close', this.config);
+                        });
+                }
+            }
+        );
     }
 
 

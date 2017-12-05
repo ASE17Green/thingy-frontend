@@ -13,6 +13,7 @@ export class UserService {
     private getUsersUrl = `${AppConfig.apiEndpoint}/user/`;
     private updateUserUrl = `${AppConfig.apiEndpoint}/user/update`;
     private getUserUrl = `${AppConfig.apiEndpoint}/user/profile`;
+    private deleteUserUrl = `${AppConfig.apiEndpoint}/user/delete`;
 
     constructor(private http: Http) { }
 
@@ -100,20 +101,8 @@ export class UserService {
         localStorage.clear();
     }
 
-    /*
-
-    // delete("/api/v1/tageler/admin/delete")
-    deleteTageler(delTageler: String): Promise<JSON> {
-        var fd:FormData = new FormData();
-        fd.append('_id', delTageler);
-
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('Accept', 'application/json');
-        let options = new RequestOptions({ headers: headers });
-
-        console.log("delete tageler with ID: "+delTageler);
-        return this.http.delete(this.tagelerUrlDelete+'/'+delTageler,options)
+    deleteUser(): Promise<JSON> {
+        return this.http.delete(this.deleteUserUrl, { headers: this.createAuthHeader() })
             .toPromise()
             .then(res => {
                 if (res.ok) {
@@ -122,7 +111,6 @@ export class UserService {
             })
             .catch(this.handleError);
     }
-    */
 
 
 
