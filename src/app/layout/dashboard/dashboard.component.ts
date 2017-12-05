@@ -32,8 +32,8 @@ export class DashboardComponent implements OnInit {
                 console.log('Something went wrong');
                 return null;
             }).then(
-            (userData: User) => {
-                this.thingyService.getLastEntry(userData.thingysID[0]).then(
+            () => {
+                this.thingyService.getLastEntry(this.user.thingysID[0]).then(
                     (thingyData: ThingyData) => {
                         this.lastThingy = thingyData;
                     },
@@ -54,36 +54,7 @@ export class DashboardComponent implements OnInit {
             }
         );
 
-
-        this.thingyService.getLastEntry('EB:10:8E:F0:E0:C3').then(
-            (thingyData: ThingyData) => {
-                this.lastThingy = thingyData;
-            },
-            error => {
-                console.log('Something went wrong');
-
-            });
-        this.thingyService.getThingyById('EB:10:8E:F0:E0:C3').then(
-            (thingyData: ThingyData[]) => {
-                this.dataNumber = thingyData.length;
-            },
-            error => {
-                console.log('Something went wrong');
-
-            });
         this.username = JSON.parse(localStorage.getItem('user')).name;
     }
 
-    // shit's not working
-    async getUserInfo(): Promise<any> {
-        await this.userService.getUser().then(
-            (userData: User) => {
-                this.user = userData;
-                console.log('inside: ' + this.user);
-                return this.user;
-            },
-            error => {
-                console.log('Something went wrong');
-            });
-    }
 }

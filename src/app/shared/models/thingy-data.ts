@@ -21,9 +21,9 @@ export class ThingyData {
     tapDirection: number;
     tapCount: number;
     orientation: number;
-    gyroscopeX: number;
-    gyroscopeY: number;
-    gyroscopeZ: number;
+    accelerometerX: number;
+    accelerometerY: number;
+    accelerometerZ: number;
     latitude: number;
     longitude: number;
 }
