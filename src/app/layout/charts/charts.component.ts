@@ -110,9 +110,11 @@ export class ChartsComponent implements OnInit, OnChanges {
     }
 
     initGraphs(): void {
-        this.gaugeTempValue = this.lastThingy.temperature;
-        this.gaugePressValue = this.lastThingy.pressure;
-        this.gaugeHumValue = this.lastThingy.humidity;
+        if(this.lastThingy){
+            this.gaugeTempValue = this.lastThingy.temperature;
+            this.gaugePressValue = this.lastThingy.pressure;
+            this.gaugeHumValue = this.lastThingy.humidity;
+        }
     }
 
     RandomizeGauge(): void {
@@ -124,8 +126,8 @@ export class ChartsComponent implements OnInit, OnChanges {
         // EB:10:8E:F0:E0:C3
         // this.user.thingysID[0]
 
-        if (this.user.thingysID) {
-            this.thingyService.getThingyById(this.user.thingysID[0]).then(
+        if (this.user.userThingys) {
+            this.thingyService.getThingyById(this.user.userThingys[0]).then(
                 (thingyData: ThingyData[]) => {
                     this.thingyData = thingyData;
                     // filter empty date columns
@@ -136,7 +138,7 @@ export class ChartsComponent implements OnInit, OnChanges {
                     this.snackbar.open('No thingy data available.', 'close', this.config);
                 }).then(
                 () => {
-                    this.thingyService.getLastEntry(this.user.thingysID[0]).then(
+                    this.thingyService.getLastEntry(this.user.userThingys[0]).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
                         },
@@ -160,8 +162,8 @@ export class ChartsComponent implements OnInit, OnChanges {
                 return null;
             }).then(
             () => {
-                if (this.user.thingysID) {
-                    this.thingyService.getLastEntry(this.user.thingysID[0]).then(
+                if (this.user.userThingys) {
+                    this.thingyService.getLastEntry(this.user.userThingys[0]).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
                             this.initGraphs();
@@ -173,8 +175,8 @@ export class ChartsComponent implements OnInit, OnChanges {
             }
         ).then(
             () => {
-                if (this.user.thingysID) {
-                    this.thingyService.getThingyById(this.user.thingysID[0]).then(
+                if (this.user.userThingys) {
+                    this.thingyService.getThingyById(this.user.userThingys[0]).then(
                         (thingyData: ThingyData[]) => {
                             this.thingyData = thingyData;
                             this.snackbar.open('Request successful', 'close', this.config);

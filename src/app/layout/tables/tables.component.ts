@@ -42,6 +42,7 @@ export class TablesComponent implements OnInit {
         this.userService.getUser().then(
             data => {
                 this.user = data;
+                console.log('this.user: ' + this.user.userThingys);
             },
             error => {
                 this.snackbar.open('Something went wrong. Please contact an admin', 'close', this.config);
@@ -63,27 +64,37 @@ export class TablesComponent implements OnInit {
         this.userthingyService.addUserthingy(this.userthingy).then(
             data => {
                 const jsonData = JSON.parse(JSON.stringify(data));
-                if (jsonData.success) {
+                if (jsonData.success === undefined) {
                     this.snackbar.open('Thingy successfully added', 'close', this.config);
                     this.newThingyForm.reset();
-                    // update User
                 } else {
-                    console.log('fail: ' + jsonData.msg);
                     this.snackbar.open(jsonData.msg, 'close', this.config);
                 }
+
             },
             error => {
                 console.log('Something went wrong');
                 this.snackbar.open('Something went wrong. Please contact an admin', 'close', this.config);
                 this.router.navigate(['/login']);
-            });
+            }).then(
+            () => {
+                this.userService.getUser().then(
+                    data => {
+                        this.user = data;
+                    },
+                    error => {
+                        this.snackbar.open('Something went wrong. Please contact an admin', 'close', this.config);
+                        this.router.navigate(['/login']);
+                    });
+            }
+        );
 
     }
 
     onDeleteAll() {
         this.userService.deleteUser().then(
             data => {
-               console.log('lol');
+               console.log('user deleted');
             },
             error => {
 

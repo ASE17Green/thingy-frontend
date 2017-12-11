@@ -33,8 +33,8 @@ export class DashboardComponent implements OnInit {
                 return null;
             }).then(
             () => {
-                if (this.user.thingysID) {
-                    this.thingyService.getLastEntry(this.user.thingysID[0]).then(
+                if (this.user.userThingys) {
+                    this.thingyService.getLastEntry(this.user.userThingys[0]).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
                         },
@@ -45,8 +45,8 @@ export class DashboardComponent implements OnInit {
             }
         ).then(
             () => {
-                if (this.user.thingysID) {
-                    this.thingyService.getThingyById(this.user.thingysID[0]).then(
+                if (this.user.userThingys) {
+                    this.thingyService.getThingyById(this.user.userThingys[0]).then(
                         (thingyData: ThingyData[]) => {
                             this.dataNumber = thingyData.length;
                         },

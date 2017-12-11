@@ -15,7 +15,7 @@ import { ThingyData, Userthingy, User } from '../../shared/models/index'
 export class FormComponent implements OnInit {
     user: User = new User();
     userthingyForm: FormGroup;
-    userthingys: Userthingy[] = [];
+    userthingys: Userthingy[];
 
     config = new MatSnackBarConfig();
 
@@ -33,18 +33,25 @@ export class FormComponent implements OnInit {
         this.userService.getUser().then(
             (userData: User) => {
                 this.user = userData;
-                return this.user;
+                console.log('userthingys of user: ' + userData.userThingys);
+                console.log('number of userthingys: ' + userData.userThingys.length);
             },
             error => {
                 console.log('Something went wrong');
-                return null;
             }).then(
             () => {
-                if (this.user.thingysID) {
-                    for (let thingysID of this.user.thingysID) {
+                if (this.user.userThingys) {
+                    console.log('userthingys request: ' + this.user.userThingys);
+                    for (let thingysID of this.user.userThingys) {
+                        console.log('thingy id request: ' + thingysID);
                         this.userthingyService.getUserthingyById(thingysID).then(
                             (userthingy: Userthingy) => {
-                                this.userthingys.push(userthingy);
+                                if(this.userthingys){
+                                    this.userthingys.push(userthingy);
+                                } else {
+                                    this.userthingys = [userthingy];
+                                }
+
                             },
                             error => {
                                 console.log('Something went wrong');

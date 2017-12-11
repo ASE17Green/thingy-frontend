@@ -40,12 +40,12 @@ export class UserthingyService {
             .catch(this.handleError);
     }
 
-    addUserthingy(newUserthingy: Userthingy): Promise<JSON> {
+    addUserthingy(newUserthingy: Userthingy): Promise<Userthingy> {
         return this.http.post(this.addUserthingyUrl, newUserthingy, {headers: this.createAuthHeader()})
             .toPromise()
             .then(res => {
                 if (res.ok) {
-                    return res.json();
+                    return res.json() as Userthingy ;
                 }
             })
             .catch(this.handleError);

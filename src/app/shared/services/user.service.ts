@@ -33,7 +33,8 @@ export class UserService {
             .toPromise()
             .then(res => {
                 if (res.ok) {
-                    console.log(res.json());
+                    console.log('new user: ' + newUser.toString());
+                    console.log('response: ' + JSON.stringify(res.json()));
                     return res.json();
                 }
             })
@@ -62,6 +63,8 @@ export class UserService {
         return this.http.get(this.getUserUrl, { headers: this.createAuthHeader() })
             .toPromise()
             .then(res => {
+                let newUser = res.json().user as User;
+                console.log(newUser.userThingys.length);
                 return res.json().user as User;
             })
             .catch(this.handleError);

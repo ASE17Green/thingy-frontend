@@ -25,13 +25,13 @@
                             </div>
 
                                 <div class="col col-sm-3">
-                                    <button class="btn rounded-btn" [disabled]="!intervalForm.valid"
+                                    <button class="btn rounded-btn" [disabled]="!userthingyForm.valid"
                                             (click)="onSetIntervals()"> Save
                                     </button>
                                 </div>
                         </div>
                     </div>
-                    <div *ngIf="!user.thingysID">
+                    <div *ngIf="!user.userThingys">
                         You currently don't own any thingys.
                     </div>
                 </div>
