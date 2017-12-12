@@ -15,10 +15,13 @@ import * as $ from 'jquery';
     styleUrls: ['./charts.component.scss'],
     animations: [routerTransition()],
 })
+
 export class ChartsComponent implements OnInit, OnChanges {
     user: User;
     thingyData: ThingyData[];
     lastThingy: ThingyData;
+
+    lastThingyDate: Date;
 
     // alert settings
     config = new MatSnackBarConfig();
@@ -79,6 +82,49 @@ export class ChartsComponent implements OnInit, OnChanges {
 
     rgbaColor = 'rgba(0, 0, 0, 0)';
 
+    /*______________ line chart data __________________*/
+    public accelChartData: Array<any> = [
+        { data: [], label: 'Acceleration X' },
+        { data: [], label: 'Acceleration Y' },
+        { data: [], label: 'Acceleration Z' }
+    ];
+    public lineChartLabels: Array<any> = [];
+    public lineChartOptions: any = {
+        responsive: true
+    };
+    public accelChartColors: Array<any> = [
+        {
+            // red
+            backgroundColor: 'rgba(192, 57, 43,0.2)',
+            borderColor: 'rgba(192, 57, 43,1)',
+            pointBackgroundColor: 'rgba(192, 57, 43,1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(192, 57, 43,0.8)'
+        },
+        {
+            // blue
+            backgroundColor: 'rgba(41, 128, 185,0.2)',
+            borderColor: 'rgba(41, 128, 185,1)',
+            pointBackgroundColor: 'rgba(41, 128, 185,1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(41, 128, 185,1)'
+        },
+        {
+            // green
+            backgroundColor: 'rgba(39, 174, 96,0.2)',
+            borderColor: 'rgba(39, 174, 96,1)',
+            pointBackgroundColor: 'rgba(39, 174, 96,1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(39, 174, 96,0.8)'
+        }
+    ];
+    public lineChartLegend: boolean = true;
+    public lineChartType: string = 'line';
+
+
     constructor(private thingyService: ThingyService,
                 private userService: UserService,
                 private snackbar: MatSnackBar,
@@ -119,15 +165,39 @@ export class ChartsComponent implements OnInit, OnChanges {
     }
 
     refreshGraphs(): void {
-        if(this.lastThingy){
+        // only refresh if new data is available
+        if (this.lastThingy && this.lastThingy.date !== this.lastThingyDate){
+            this.lastThingyDate = this.lastThingy.date;
+
+            // format date for y axis
+            let date = new Date(this.lastThingy.date);
+            this.lineChartLabels.push('' + date.getHours()
+                + ':' + date.getMinutes()
+                + ':' + date.getSeconds());
+
+            /* deep clone necessary, else the data won't update */
+
+            // acceleration
+            let cloned = this.accelChartData.map(x => Object.assign({}, x));
+            cloned[0].data.push(this.lastThingy.accelerometerX);
+            cloned[1].data.push(this.lastThingy.accelerometerY);
+            cloned[2].data.push(this.lastThingy.accelerometerZ);
+            this.accelChartData = cloned;
+
+
+
             // gauges
             this.gaugeTempValue = this.lastThingy.temperature;
             this.gaugePressValue = this.lastThingy.pressure;
             this.gaugeHumValue = this.lastThingy.humidity;
             this.gaugeEcoValue = this.lastThingy.eco2;
 
-            let colorMax = Math.max(this.lastThingy.colorRed, this.lastThingy.colorGreen, this.lastThingy.colorBlue);
+            // linegraphs
+
+
             // color
+            let colorMax = Math.max(this.lastThingy.colorRed, this.lastThingy.colorGreen, this.lastThingy.colorBlue);
+
             this.rgbaColor = 'rgba('
                 + Math.round(this.lastThingy.colorRed / colorMax * 255)
                 + ','
@@ -138,7 +208,6 @@ export class ChartsComponent implements OnInit, OnChanges {
                 + 1
                 + ')';
             console.log(this.rgbaColor);
-            //this.rgbaColor = 'rgba(200, 0, 0, 0.9)';
 
             // map position and marker
             this.latMarker = this.lastThingy.latitude;
@@ -147,8 +216,17 @@ export class ChartsComponent implements OnInit, OnChanges {
     }
 
     RandomizeGauge(): void {
-        this.latMarker += this.randomNumberFromInterval(-1, 1) / 1000;
-        this.lngMarker += this.randomNumberFromInterval(-1, 1) / 1000;
+        // acceleration
+        let cloned = this.accelChartData.map(x => Object.assign({}, x));
+        cloned[0].data.push(this.lastThingy.accelerometerX);
+        cloned[1].data.push(this.lastThingy.accelerometerY);
+        cloned[2].data.push(this.lastThingy.accelerometerZ);
+        this.accelChartData = cloned;
+
+        let date = new Date(this.lastThingy.date);
+        this.lineChartLabels.push('' + date.getHours()
+            + ':' + date.getMinutes()
+            + ':' + date.getSeconds());
     }
 
     refreshData(): void {
@@ -222,6 +300,14 @@ export class ChartsComponent implements OnInit, OnChanges {
     randomNumberFromInterval(min: number, max: number): number {
         // returns a random number rounded to two decimals between min and max
         return Math.round((Math.random() * (max - min + 1) + min) * 100) / 100;
+    }
+
+    public chartClicked(e: any): void {
+        // console.log(e);
+    }
+
+    public chartHovered(e: any): void {
+        // console.log(e);
     }
 
 

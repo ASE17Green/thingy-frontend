@@ -171,13 +171,21 @@
                     Acceleration
                 </div>
                 <div class="card-block">
-                    {{lastThingy?.accelerometerX}},
-                    {{lastThingy?.accelerometerY}},
-                    {{lastThingy?.accelerometerZ}}
+                    <canvas baseChart height="250"
+                            [datasets]="accelChartData"
+                            [labels]="lineChartLabels"
+                            [options]="lineChartOptions"
+                            [colors]="accelChartColors"
+                            [legend]="lineChartLegend"
+                            [chartType]="lineChartType"
+                            (chartHover)="chartHovered($event)"
+                            (chartClick)="chartClicked($event)">
+                    </canvas>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="row" id="test">
         <div class="col-sm-9">
             <div class="card mb-3">
