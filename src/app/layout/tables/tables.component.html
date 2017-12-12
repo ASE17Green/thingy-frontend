@@ -37,9 +37,11 @@
                     <table class="table">
                         <tr>
                             <th>Thingy Id</th>
+                            <th>Options</th>
                         </tr>
                         <tr *ngFor="let TId of user.userThingys">
                             <td>{{ TId }}</td>
+                            <td><i (click)="onDeleteUserthingy(TId)" class="fa fa-ban"></i></td>
                         </tr>
                     </table>
                 </div>

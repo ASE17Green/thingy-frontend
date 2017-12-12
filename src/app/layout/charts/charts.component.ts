@@ -25,15 +25,15 @@ export class ChartsComponent implements OnInit, OnChanges {
 
     // table sorting and pagination stuff
     key: string = 'date';
-    reverse: boolean = false;
+    reverse: boolean = true;
     p: number = 1;
 
-    title: string = 'My first AGM project';
-    latMap: number = 51.678418;
-    lngMap: number = 7.809007;
+    title: string = 'Current Thingy Position';
+    latMap: number = 0;
+    lngMap: number = 0;
 
-    latMarker: number = 51.678418;
-    lngMarker: number = 7.809007;
+    latMarker: number = 0;
+    lngMarker: number = 0;
 
     latPoly1: number = 51.678418;
     latPoly2: number = 50.678418;
@@ -43,9 +43,9 @@ export class ChartsComponent implements OnInit, OnChanges {
     lngPoly3: number = 9.309007;
 
     gaugeDefType = "arch";
-    gaugeDefValue = 28;
-    gaugeDefLabel = "Flurins";
-    gaugeDefAppendText = "m/s";
+    gaugeDefValue = 0;
+    gaugeDefLabel = "-";
+    gaugeDefAppendText = "-";
     gaugeDefThresholdConfig = {
         '0': {color: 'red'},
         '10': {color: 'orange'},
@@ -67,13 +67,17 @@ export class ChartsComponent implements OnInit, OnChanges {
 
     gaugePressValue = 0;
     gaugePressLabel = "Pressure";
-    gaugePressAppendText = "Pascal";
+    gaugePressAppendText = "Pa";
 
     gaugeHumValue = 0;
     gaugeHumLabel = "Humidity";
     gaugeHumAppendText = "%";
 
+    gaugeEcoValue = 0;
+    gaugeEcoLabel = "CO₂";
+    gaugeEcoAppendText = "ppm";
 
+    rgbaColor = 'rgba(0, 0, 0, 0)';
 
     constructor(private thingyService: ThingyService,
                 private userService: UserService,
@@ -85,7 +89,7 @@ export class ChartsComponent implements OnInit, OnChanges {
 
         this.getAllData();
 
-        const refreshInterval = setInterval(() => { this.refreshData(); }, 5000);
+        const refreshInterval = setInterval(() => { this.refreshData(); }, 2000);
         router.events.forEach((event) => {
             if (event instanceof NavigationStart) {
                 clearInterval(refreshInterval);
@@ -94,10 +98,10 @@ export class ChartsComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-
+        /*
         this.latMap = this.latMarker = this.randomNumberFromInterval(40, 50);
         this.lngMap = this.lngMarker = this.randomNumberFromInterval(7, 8);
-
+        */
     }
 
     ngOnChanges() {
@@ -109,11 +113,36 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.reverse = !this.reverse;
     }
 
-    initGraphs(): void {
+    initMapPos(): void {
+        this.latMap = this.lastThingy.latitude;
+        this.lngMap = this.lastThingy.longitude;
+    }
+
+    refreshGraphs(): void {
         if(this.lastThingy){
+            // gauges
             this.gaugeTempValue = this.lastThingy.temperature;
             this.gaugePressValue = this.lastThingy.pressure;
             this.gaugeHumValue = this.lastThingy.humidity;
+            this.gaugeEcoValue = this.lastThingy.eco2;
+
+            let colorMax = Math.max(this.lastThingy.colorRed, this.lastThingy.colorGreen, this.lastThingy.colorBlue);
+            // color
+            this.rgbaColor = 'rgba('
+                + Math.round(this.lastThingy.colorRed / colorMax * 255)
+                + ','
+                + Math.round(this.lastThingy.colorGreen / colorMax * 255)
+                + ','
+                + Math.round(this.lastThingy.colorBlue / colorMax * 255)
+                + ','
+                + 1
+                + ')';
+            console.log(this.rgbaColor);
+            //this.rgbaColor = 'rgba(200, 0, 0, 0.9)';
+
+            // map position and marker
+            this.latMarker = this.lastThingy.latitude;
+            this.lngMarker = this.lastThingy.longitude;
         }
     }
 
@@ -123,16 +152,13 @@ export class ChartsComponent implements OnInit, OnChanges {
     }
 
     refreshData(): void {
-        // EB:10:8E:F0:E0:C3
-        // this.user.thingysID[0]
-
-        if (this.user.userThingys) {
+        if (this.user && this.user.userThingys) {
             this.thingyService.getThingyById(this.user.userThingys[0]).then(
                 (thingyData: ThingyData[]) => {
                     this.thingyData = thingyData;
                     // filter empty date columns
                     this.thingyData = this.thingyData.filter(function(n){ return n.date != undefined });
-                    this.snackbar.open('Request successful', 'close', this.config);
+                    //this.snackbar.open('Request successful', 'close', this.config);
                 },
                 error => {
                     this.snackbar.open('No thingy data available.', 'close', this.config);
@@ -141,6 +167,7 @@ export class ChartsComponent implements OnInit, OnChanges {
                     this.thingyService.getLastEntry(this.user.userThingys[0]).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
+                            this.refreshGraphs();
                         },
                         error => {
                             console.log('Something went wrong');
@@ -166,7 +193,8 @@ export class ChartsComponent implements OnInit, OnChanges {
                     this.thingyService.getLastEntry(this.user.userThingys[0]).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
-                            this.initGraphs();
+                            this.initMapPos();
+                            this.refreshGraphs();
                         },
                         error => {
                             console.log('Something went wrong');

@@ -100,4 +100,22 @@ export class TablesComponent implements OnInit {
 
             });
     }
+
+    onDeleteUserthingy(id: string) {
+        this.userthingyService.deleteUserthingy(id).then(
+            data => {
+                console.log('userthingy deleted');
+                this.userService.getUser().then(
+                    userdata => {
+                        this.user = userdata;
+                    },
+                    error => {
+                        this.snackbar.open('Something went wrong. Please contact an admin', 'close', this.config);
+                        this.router.navigate(['/login']);
+                    });
+            },
+            error => {
+                console.log(error)
+            });
+    }
 }

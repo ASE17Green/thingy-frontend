@@ -4,7 +4,7 @@
         <div class="col col-sm-12">
             <div class="card mb-3">
                 <div class="card-header">
-                    Generated Data Table
+                    Sensordata table
                 </div>
                 <div class="card-block">
                     <table class="table table-striped table-responsive">
@@ -38,10 +38,6 @@
                                 <th>Color Green</th>
                                 <th>Color Blue</th>
                                 <th>Color Alpha</th>
-                                <th>Button</th>
-                                <th>Tap Direction</th>
-                                <th>Tap Count</th>
-                                <th>Orientation</th>
                                 <th>Accelerometer X</th>
                                 <th>Accelerometer Y</th>
                                 <th>Accelerometer Z</th>
@@ -64,10 +60,6 @@
                                 <td>{{ thingy.colorGreen }}</td>
                                 <td>{{ thingy.colorBlue }}</td>
                                 <td>{{ thingy.colorAlpha }}</td>
-                                <td>{{ thingy.button }}</td>
-                                <td>{{ thingy.tapDirection }}</td>
-                                <td>{{ thingy.tapCount }}</td>
-                                <td>{{ thingy.orientation }}</td>
                                 <td>{{ thingy.accelerometerX }}</td>
                                 <td>{{ thingy.accelerometerY }}</td>
                                 <td>{{ thingy.accelerometerZ }}</td>
@@ -87,49 +79,102 @@
     </div>
 
     <div class="row">
-        <div class="col col-sm-3">
-            <div class="card mb-3">
+        <div class="col col-sm-4">
+            <div class="card mb-4">
                 <div class="card-header">
                     Temperature
                 </div>
-                <ngx-gauge [type]="gaugeDefType"
-                           [value]="gaugeTempValue"
-                           [label]="gaugeTempLabel"
-                           [append]="gaugeTempAppendText"
-                           [thresholds]="gaugeDefThresholdConfig"
-                           [duration]="1"
-                           [thick]="10">
-                </ngx-gauge>
+                <div class="card-block">
+                    <ngx-gauge [type]="gaugeDefType"
+                               [value]="gaugeTempValue"
+                               [label]="gaugeTempLabel"
+                               [append]="gaugeTempAppendText"
+                               [thresholds]="gaugeDefThresholdConfig"
+                               [duration]="1"
+                               [thick]="10"
+                               [size]="250">;
+                    </ngx-gauge>
+                </div>
             </div>
         </div>
-        <div class="col col-sm-3">
-            <div class="card mb-3">
+        <div class="col col-sm-4">
+            <div class="card mb-4">
                 <div class="card-header">
                     Pressure
                 </div>
-                <ngx-gauge [type]="gaugeDefType"
-                           [value]="gaugePressValue"
-                           [label]="gaugePressLabel"
-                           [append]="gaugePressAppendText"
-                           [thresholds]="gaugeDefThresholdConfig"
-                           [duration]="1"
-                           [thick]="10">
-                </ngx-gauge>
+                <div class="card-block">
+                    <ngx-gauge [type]="gaugeDefType"
+                               [value]="gaugePressValue"
+                               [label]="gaugePressLabel"
+                               [append]="gaugePressAppendText"
+                               [thresholds]="gaugeDefThresholdConfig"
+                               [duration]="1"
+                               [thick]="10"
+                               [size]="250">
+                    </ngx-gauge>
+                </div>
             </div>
         </div>
-        <div class="col col-sm-3">
-            <div class="card mb-3">
+        <div class="col col-sm-4">
+            <div class="card mb-4">
                 <div class="card-header">
                     Humidity
                 </div>
-                <ngx-gauge [type]="gaugeDefType"
-                           [value]="gaugeHumValue"
-                           [label]="gaugeHumLabel"
-                           [append]="gaugeHumAppendText"
-                           [thresholds]="gaugeDefThresholdConfig"
-                           [duration]="1"
-                           [thick]="10">
-                </ngx-gauge>
+                <div class="card-block">
+                    <ngx-gauge [type]="gaugeDefType"
+                               [value]="gaugeHumValue"
+                               [label]="gaugeHumLabel"
+                               [append]="gaugeHumAppendText"
+                               [thresholds]="gaugeDefThresholdConfig"
+                               [duration]="1"
+                               [thick]="10"
+                               [size]="250">
+                    </ngx-gauge>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col col-sm-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Eco2
+                </div>
+                <div class="card-block">
+                    <ngx-gauge [type]="gaugeDefType"
+                               [value]="gaugeEcoValue"
+                               [label]="gaugeEcoLabel"
+                               [append]="gaugeEcoAppendText"
+                               [thresholds]="gaugeDefThresholdConfig"
+                               [duration]="1"
+                               [thick]="10"
+                               [size]="250">;
+                    </ngx-gauge>
+                </div>
+            </div>
+        </div>
+        <div class="col col-sm-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Color
+                </div>
+                <div class="card-block">
+                    <div [ngStyle]="{'background-color':rgbaColor, 'width':'250px', 'height':'250px'}">
+                    </div>
+                    <!--<h1 [ngStyle]="{'background-color':rgbaColor}">asdf</h1>-->
+                </div>
+            </div>
+        </div>
+        <div class="col col-sm-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Acceleration
+                </div>
+                <div class="card-block">
+                    {{lastThingy?.accelerometerX}},
+                    {{lastThingy?.accelerometerY}},
+                    {{lastThingy?.accelerometerZ}}
+                </div>
             </div>
         </div>
     </div>

@@ -20,7 +20,6 @@
                 <th>Date
                 </th>
                 <th>Thingy Id</th>
-                <th>User</th>
                 <th>Temperature [C°]
                 </th>
                 <th>Pressure
@@ -33,10 +32,6 @@
                 <th>Color Green</th>
                 <th>Color Blue</th>
                 <th>Color Alpha</th>
-                <th>Button</th>
-                <th>Tap Direction</th>
-                <th>Tap Count</th>
-                <th>Orientation</th>
                 <th>Accelerometer X</th>
                 <th>Accelerometer Y</th>
                 <th>Accelerometer Z</th>
@@ -48,7 +43,6 @@
             <tr>
                 <td>{{ lastThingy?.date | date: 'dd/MM/yy, hh:mm:ss'}}</td>
                 <td>{{ lastThingy?.thingyID }}</td>
-                <td>{{ lastThingy?.user?.email }}</td>
                 <td>{{ lastThingy?.temperature }}</td>
                 <td>{{ lastThingy?.pressure }}</td>
                 <td>{{ lastThingy?.humidity }}</td>
@@ -58,10 +52,6 @@
                 <td>{{ lastThingy?.colorGreen }}</td>
                 <td>{{ lastThingy?.colorBlue }}</td>
                 <td>{{ lastThingy?.colorAlpha }}</td>
-                <td>{{ lastThingy?.button }}</td>
-                <td>{{ lastThingy?.tapDirection }}</td>
-                <td>{{ lastThingy?.tapCount }}</td>
-                <td>{{ lastThingy?.orientation }}</td>
                 <td>{{ lastThingy?.accelerometerX }}</td>
                 <td>{{ lastThingy?.accelerometerY }}</td>
                 <td>{{ lastThingy?.accelerometerZ }}</td>
