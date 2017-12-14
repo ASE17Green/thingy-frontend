@@ -52,9 +52,7 @@ export class UserthingyService {
     }
 
     updateUserthingy(putUserthingy: Userthingy): Promise<JSON> {
-        const body = JSON.stringify(putUserthingy);
-
-        return this.http.put(this.updateUserthingyUrl + '/' + putUserthingy._id, body, { headers: this.createAuthHeader() })
+        return this.http.put(this.updateUserthingyUrl + '/' + putUserthingy.thingyID, putUserthingy, { headers: this.createAuthHeader() })
             .toPromise()
             .then(res => {
                 if (res.ok) {

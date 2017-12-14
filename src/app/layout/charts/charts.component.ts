@@ -1,10 +1,9 @@
 import {Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation} from '@angular/core';
 import {routerTransition} from '../../router.animations';
-import {ThingyService, UserService} from '../../shared/services/index';
-import {ThingyData} from '../../shared/models/thingy-data';
+import {ThingyService, UserService, UserthingyService} from '../../shared/services/index';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
 import { RouterModule, Routes, Router, NavigationStart } from '@angular/router';
-import { User } from '../../shared/models/user';
+import { Userthingy, User, ThingyData } from '../../shared/models/index'
 import * as d3 from 'd3';
 
 import * as $ from 'jquery';
@@ -20,6 +19,14 @@ export class ChartsComponent implements OnInit, OnChanges {
     user: User;
     thingyData: ThingyData[];
     lastThingy: ThingyData;
+    userthingy: Userthingy;
+
+    graphPoints = 60;
+    showGraphs = false;
+    showTempGraph = false;
+    showPresGraph = false;
+    showHumGraph = false;
+    showEco2Graph = false;
 
     lastThingyDate: Date;
 
@@ -58,15 +65,11 @@ export class ChartsComponent implements OnInit, OnChanges {
     };
 
     gaugeTempValue = 0;
+    gaugeTempMinValue = 0;
+    gaugeTempMaxValue = 100;
     gaugeTempLabel = "Temperature";
     gaugeTempAppendText = "°C";
-    gaugeTempThresholdConfig = {
-        '0': {color: 'red'},
-        '10': {color: 'orange'},
-        '20': {color: 'green'},
-        '80': {color: 'orange'},
-        '90': {color: 'red'}
-    };
+    gaugeTempThresholdConfig = {};
 
     gaugePressValue = 0;
     gaugePressLabel = "Pressure";
@@ -83,15 +86,31 @@ export class ChartsComponent implements OnInit, OnChanges {
     rgbaColor = 'rgba(0, 0, 0, 0)';
 
     /*______________ line chart data __________________*/
+
+    public lineChartLabels: Array<any> = [];
+    public lineChartOptions: any = {
+        responsive: true
+    };
+    public lineChartLegend: boolean = true;
+    public lineChartType: string = 'line';
     public accelChartData: Array<any> = [
         { data: [], label: 'Acceleration X' },
         { data: [], label: 'Acceleration Y' },
         { data: [], label: 'Acceleration Z' }
     ];
-    public lineChartLabels: Array<any> = [];
-    public lineChartOptions: any = {
-        responsive: true
-    };
+    public tempChartData: Array<any> = [
+        { data: [], label: 'Temperature [°C]' }
+    ];
+    public presChartData: Array<any> = [
+        { data: [], label: 'Pressure [Pa]' }
+    ];
+    public humChartData: Array<any> = [
+        { data: [], label: 'Humidity [%]' }
+    ];
+    public eco2ChartData: Array<any> = [
+        { data: [], label: 'Eco2' }
+    ];
+
     public accelChartColors: Array<any> = [
         {
             // red
@@ -121,13 +140,24 @@ export class ChartsComponent implements OnInit, OnChanges {
             pointHoverBorderColor: 'rgba(39, 174, 96,0.8)'
         }
     ];
-    public lineChartLegend: boolean = true;
-    public lineChartType: string = 'line';
+
+    public lineChartColors: Array<any> = [
+        {
+            // black
+            backgroundColor: 'rgba(0, 0, 0,0.2)',
+            borderColor: 'rgba(0, 0, 0,1)',
+            pointBackgroundColor: 'rgba(0, 0, 0,1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(0, 0, 0,0.8)'
+        }
+    ];
 
 
     constructor(private thingyService: ThingyService,
                 private userService: UserService,
                 private snackbar: MatSnackBar,
+                private userthingyService: UserthingyService,
                 private router: Router) {
         // alert settings
         this.config.extraClasses = ['snackbar-design'];
@@ -159,14 +189,95 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.reverse = !this.reverse;
     }
 
-    initMapPos(): void {
+    initLastThingyData(): void {
+        // map
         this.latMap = this.lastThingy.latitude;
         this.lngMap = this.lastThingy.longitude;
+        this.latMarker = this.lastThingy.latitude;
+        this.lngMarker = this.lastThingy.longitude;
+
+        // gauges
+        this.gaugeTempValue = this.lastThingy.temperature;
+        this.gaugePressValue = this.lastThingy.pressure;
+        this.gaugeHumValue = this.lastThingy.humidity;
+        this.gaugeEcoValue = this.lastThingy.eco2;
+
+        // color
+        let colorMax = Math.max(this.lastThingy.colorRed, this.lastThingy.colorGreen, this.lastThingy.colorBlue);
+
+        this.rgbaColor = 'rgba('
+            + Math.round(this.lastThingy.colorRed / colorMax * 255)
+            + ','
+            + Math.round(this.lastThingy.colorGreen / colorMax * 255)
+            + ','
+            + Math.round(this.lastThingy.colorBlue / colorMax * 255)
+            + ','
+            + 1
+            + ')';
+    }
+
+    initUserthingyData(): void {
+        // temperature intervals
+        if (this.userthingy) {
+            let minTemp = this.userthingy.thingyMinTemperature;
+            let maxTemp = this.userthingy.thingyMaxTemperature;
+            this.gaugeTempMinValue = minTemp - 10;
+            this.gaugeTempMaxValue = maxTemp + 10;
+            this.gaugeTempThresholdConfig[minTemp - 10] = {color: 'red'};
+            this.gaugeTempThresholdConfig[minTemp] = {color: 'orange'};
+            this.gaugeTempThresholdConfig[minTemp + 5] = {color: 'green'};
+            this.gaugeTempThresholdConfig[maxTemp - 5] = {color: 'orange'};
+            this.gaugeTempThresholdConfig[maxTemp] = {color: 'red'};
+        }
+    }
+
+    initThingyData(): void {
+        let dates = this.getKeyOfThingData(this.thingyData, 'date', this.graphPoints);
+        let accelX = this.getKeyOfThingData(this.thingyData, 'accelerometerX', this.graphPoints);
+        let accelY = this.getKeyOfThingData(this.thingyData, 'accelerometerY', this.graphPoints);
+        let accelZ = this.getKeyOfThingData(this.thingyData, 'accelerometerZ', this.graphPoints);
+        let temp = this.getKeyOfThingData(this.thingyData, 'temperature', this.graphPoints);
+        let pres = this.getKeyOfThingData(this.thingyData, 'pressure', this.graphPoints);
+        let hum = this.getKeyOfThingData(this.thingyData, 'humidity', this.graphPoints);
+        let eco2 = this.getKeyOfThingData(this.thingyData, 'eco2', this.graphPoints);
+
+        // format date for y axis
+        for (let date of dates) {
+            let formatDate = new Date(date);
+            console.log('date: ' + date);
+            this.lineChartLabels.push('' + formatDate.getHours()
+                + ':' + formatDate.getMinutes()
+                + ':' + formatDate.getSeconds());
+        }
+
+        let accelData = [
+            { data: accelX, label: 'Acceleration X' },
+            { data: accelY, label: 'Acceleration Y' },
+            { data: accelZ, label: 'Acceleration Z' }
+        ];
+        let tempData = [
+            { data: temp, label: 'Temperature [°C]' }
+        ];
+        let presData = [
+            { data: pres, label: 'Pressure [Pa]' }
+        ];
+        let humData = [
+            { data: hum, label: 'Humidity [%]' }
+        ];
+        let eco2Data = [
+            { data: eco2, label: 'Eco2' }
+        ];
+        this.accelChartData = accelData;
+        this.tempChartData = tempData;
+        this.presChartData = presData;
+        this.humChartData = humData;
+        this.eco2ChartData = eco2Data;
+
     }
 
     refreshGraphs(): void {
         // only refresh if new data is available
-        if (this.lastThingy && this.lastThingy.date !== this.lastThingyDate){
+        if (this.lastThingy && this.lastThingy.date !== this.lastThingyDate) {
             this.lastThingyDate = this.lastThingy.date;
 
             // format date for y axis
@@ -175,25 +286,36 @@ export class ChartsComponent implements OnInit, OnChanges {
                 + ':' + date.getMinutes()
                 + ':' + date.getSeconds());
 
-            /* deep clone necessary, else the data won't update */
+            /***** linegraphs deep clone necessary, else the data won't update *****/
 
             // acceleration
-            let cloned = this.accelChartData.map(x => Object.assign({}, x));
-            cloned[0].data.push(this.lastThingy.accelerometerX);
-            cloned[1].data.push(this.lastThingy.accelerometerY);
-            cloned[2].data.push(this.lastThingy.accelerometerZ);
-            this.accelChartData = cloned;
+            let accelClone = this.accelChartData.map(x => Object.assign({}, x));
+            accelClone[0].data.push(this.lastThingy.accelerometerX);
+            accelClone[1].data.push(this.lastThingy.accelerometerY);
+            accelClone[2].data.push(this.lastThingy.accelerometerZ);
+            this.accelChartData = accelClone;
 
+            let tempClone = this.tempChartData.map(x => Object.assign({}, x));
+            tempClone[0].data.push(this.lastThingy.temperature);
+            this.tempChartData = tempClone;
 
+            let presClone = this.presChartData.map(x => Object.assign({}, x));
+            presClone[0].data.push(this.lastThingy.pressure);
+            this.presChartData = presClone;
+
+            let humClone = this.humChartData.map(x => Object.assign({}, x));
+            humClone[0].data.push(this.lastThingy.humidity);
+            this.humChartData = humClone;
+
+            let eco2Clone = this.eco2ChartData.map(x => Object.assign({}, x));
+            eco2Clone[0].data.push(this.lastThingy.eco2);
+            this.eco2ChartData = eco2Clone;
 
             // gauges
             this.gaugeTempValue = this.lastThingy.temperature;
             this.gaugePressValue = this.lastThingy.pressure;
             this.gaugeHumValue = this.lastThingy.humidity;
             this.gaugeEcoValue = this.lastThingy.eco2;
-
-            // linegraphs
-
 
             // color
             let colorMax = Math.max(this.lastThingy.colorRed, this.lastThingy.colorGreen, this.lastThingy.colorBlue);
@@ -207,11 +329,8 @@ export class ChartsComponent implements OnInit, OnChanges {
                 + ','
                 + 1
                 + ')';
-            console.log(this.rgbaColor);
 
-            // map position and marker
-            this.latMarker = this.lastThingy.latitude;
-            this.lngMarker = this.lastThingy.longitude;
+
         }
     }
 
@@ -271,8 +390,8 @@ export class ChartsComponent implements OnInit, OnChanges {
                     this.thingyService.getLastEntry(this.user.userThingys[0]).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
-                            this.initMapPos();
-                            this.refreshGraphs();
+                            this.lastThingyDate = this.lastThingy.date;
+                            this.initLastThingyData();
                         },
                         error => {
                             console.log('Something went wrong');
@@ -285,12 +404,27 @@ export class ChartsComponent implements OnInit, OnChanges {
                     this.thingyService.getThingyById(this.user.userThingys[0]).then(
                         (thingyData: ThingyData[]) => {
                             this.thingyData = thingyData;
+                            this.initThingyData();
                             this.snackbar.open('Request successful', 'close', this.config);
                         },
                         error => {
                             console.log('Something went wrong');
                             this.snackbar.open('No thingy data available.', 'close', this.config);
                         });
+                }
+            }
+        ).then(
+            () => {
+                if( this.user.userThingys){
+                    this.userthingyService.getUserthingyById(this.user.userThingys[0]).then(
+                        (userThingy: Userthingy) => {
+                            this.userthingy = userThingy;
+                            this.initUserthingyData();
+                            this.refreshGraphs();
+                        },
+                        error => {
+                            this.snackbar.open('Couldnt load userthingy');
+                        })
                 }
             }
         );
@@ -310,5 +444,8 @@ export class ChartsComponent implements OnInit, OnChanges {
         // console.log(e);
     }
 
+    getKeyOfThingData(array: ThingyData[], key: string, elements: number) {
+        return array.map(function(item) { return item[key]; }).splice(-elements);
+    }
 
 }

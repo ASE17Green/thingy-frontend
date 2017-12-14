@@ -64,7 +64,6 @@ export class FormComponent implements OnInit {
 
     createForm() {
         this.userthingyForm = this.fb.group({
-            thingyID: ['', Validators.required],
             thingyMinTemperature: ['', Validators.required],
             thingyMaxTemperature: ['', Validators.required],
             endLatitude: ['', Validators.required],
@@ -77,17 +76,13 @@ export class FormComponent implements OnInit {
             this.userthingyService.updateUserthingy(userthingy).then(
                 data => {
                     const jsonData = JSON.parse(JSON.stringify(data));
-                    if (jsonData.success) {
+                    if (jsonData.success === undefined) {
                         this.snackbar.open('Thingy successfully updated', 'close', this.config);
-                        this.userthingyForm.reset();
-                        // update User
                     } else {
-                        console.log('fail: ' + jsonData.msg);
                         this.snackbar.open(jsonData.msg, 'close', this.config);
                     }
                 },
                 error => {
-                    console.log('Something went wrong');
                     this.snackbar.open('Something went wrong. Please contact an admin', 'close', this.config);
                     this.router.navigate(['/login']);
                 });

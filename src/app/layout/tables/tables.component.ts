@@ -91,16 +91,6 @@ export class TablesComponent implements OnInit {
 
     }
 
-    onDeleteAll() {
-        this.userService.deleteUser().then(
-            data => {
-               console.log('user deleted');
-            },
-            error => {
-
-            });
-    }
-
     onDeleteUserthingy(id: string) {
         this.userthingyService.deleteUserthingy(id).then(
             data => {

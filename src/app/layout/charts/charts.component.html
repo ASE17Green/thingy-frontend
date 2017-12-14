@@ -16,7 +16,6 @@
                                     </span>
                                 </th>
                                 <th>Thingy Id</th>
-                                <th>User</th>
                                 <th (click)="sort('temperature')">Temperature [C°]
                                     <span class="fa" [ngClass]="{'fa-sort-asc':reverse && key =='temperature',
                                     'fa-sort-desc':!reverse && key =='temperature', 'fa-sort': key != 'temperature'}">
@@ -50,7 +49,6 @@
                             | paginate: { itemsPerPage: 5, currentPage: p }">
                                 <td>{{ thingy.date | date: 'dd/MM/yy, hh:mm:ss'}}</td>
                                 <td>{{ thingy.thingyID }}</td>
-                                <td>{{ thingy.user?.email }}</td>
                                 <td>{{ thingy.temperature }}</td>
                                 <td>{{ thingy.pressure }}</td>
                                 <td>{{ thingy.humidity }}</td>
@@ -83,17 +81,32 @@
             <div class="card mb-4">
                 <div class="card-header">
                     Temperature
+                    <span class="pull-right fa fa-line-chart" (click)="showTempGraph =! showTempGraph"></span>
                 </div>
                 <div class="card-block">
-                    <ngx-gauge [type]="gaugeDefType"
+                    <ngx-gauge *ngIf="!showTempGraph"
+                               [type]="gaugeDefType"
                                [value]="gaugeTempValue"
+                               [min] = "gaugeTempMinValue"
+                               [max] = "gaugeTempMaxValue"
                                [label]="gaugeTempLabel"
                                [append]="gaugeTempAppendText"
-                               [thresholds]="gaugeDefThresholdConfig"
+                               [thresholds]="gaugeTempThresholdConfig"
                                [duration]="1"
                                [thick]="10"
                                [size]="250">;
                     </ngx-gauge>
+                    <canvas *ngIf="showTempGraph"
+                            baseChart height="250"
+                            [datasets]="tempChartData"
+                            [labels]="lineChartLabels"
+                            [options]="lineChartOptions"
+                            [colors]="lineChartColors"
+                            [legend]="lineChartLegend"
+                            [chartType]="lineChartType"
+                            (chartHover)="chartHovered($event)"
+                            (chartClick)="chartClicked($event)">
+                    </canvas>
                 </div>
             </div>
         </div>
@@ -101,9 +114,11 @@
             <div class="card mb-4">
                 <div class="card-header">
                     Pressure
+                    <span class="pull-right fa fa-line-chart" (click)="showPresGraph =! showPresGraph"></span>
                 </div>
                 <div class="card-block">
-                    <ngx-gauge [type]="gaugeDefType"
+                    <ngx-gauge *ngIf="!showPresGraph"
+                               [type]="gaugeDefType"
                                [value]="gaugePressValue"
                                [label]="gaugePressLabel"
                                [append]="gaugePressAppendText"
@@ -112,6 +127,17 @@
                                [thick]="10"
                                [size]="250">
                     </ngx-gauge>
+                    <canvas *ngIf="showPresGraph"
+                            baseChart height="250"
+                            [datasets]="presChartData"
+                            [labels]="lineChartLabels"
+                            [options]="lineChartOptions"
+                            [colors]="lineChartColors"
+                            [legend]="lineChartLegend"
+                            [chartType]="lineChartType"
+                            (chartHover)="chartHovered($event)"
+                            (chartClick)="chartClicked($event)">
+                    </canvas>
                 </div>
             </div>
         </div>
@@ -119,9 +145,11 @@
             <div class="card mb-4">
                 <div class="card-header">
                     Humidity
+                    <span class="pull-right fa fa-line-chart" (click)="showHumGraph =! showHumGraph"></span>
                 </div>
                 <div class="card-block">
-                    <ngx-gauge [type]="gaugeDefType"
+                    <ngx-gauge *ngIf="!showHumGraph"
+                               [type]="gaugeDefType"
                                [value]="gaugeHumValue"
                                [label]="gaugeHumLabel"
                                [append]="gaugeHumAppendText"
@@ -130,6 +158,17 @@
                                [thick]="10"
                                [size]="250">
                     </ngx-gauge>
+                    <canvas *ngIf="showHumGraph"
+                            baseChart height="250"
+                            [datasets]="humChartData"
+                            [labels]="lineChartLabels"
+                            [options]="lineChartOptions"
+                            [colors]="lineChartColors"
+                            [legend]="lineChartLegend"
+                            [chartType]="lineChartType"
+                            (chartHover)="chartHovered($event)"
+                            (chartClick)="chartClicked($event)">
+                    </canvas>
                 </div>
             </div>
         </div>
@@ -139,9 +178,11 @@
             <div class="card mb-4">
                 <div class="card-header">
                     Eco2
+                    <span class="pull-right fa fa-line-chart" (click)="showEco2Graph =! showEco2Graph"></span>
                 </div>
                 <div class="card-block">
-                    <ngx-gauge [type]="gaugeDefType"
+                    <ngx-gauge *ngIf="!showEco2Graph"
+                               [type]="gaugeDefType"
                                [value]="gaugeEcoValue"
                                [label]="gaugeEcoLabel"
                                [append]="gaugeEcoAppendText"
@@ -150,6 +191,17 @@
                                [thick]="10"
                                [size]="250">;
                     </ngx-gauge>
+                    <canvas *ngIf="showEco2Graph"
+                            baseChart height="250"
+                            [datasets]="eco2ChartData"
+                            [labels]="lineChartLabels"
+                            [options]="lineChartOptions"
+                            [colors]="lineChartColors"
+                            [legend]="lineChartLegend"
+                            [chartType]="lineChartType"
+                            (chartHover)="chartHovered($event)"
+                            (chartClick)="chartClicked($event)">
+                    </canvas>
                 </div>
             </div>
         </div>
