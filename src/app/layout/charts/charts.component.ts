@@ -397,7 +397,7 @@ export class ChartsComponent implements OnInit, OnChanges {
                 return null;
             }).then(
             () => {
-                if (this.user.userThingys) {
+                if (this.user.userThingys && this.lastThingy) {
                     this.thingyService.getLastEntry(this.user.userThingys[0]).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;

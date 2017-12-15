@@ -1,8 +1,14 @@
 <div [@routerTransition]>
     <h2 class="text-muted">Dashboard <small>of {{username}}</small></h2>
 
-    <h4> Hi! </h4>
-    <div class="col col-sm-8">
+    <h4> Hi! <br> </h4>
+    <span *ngIf="userthingyLength == 0">
+        <h4>
+            You currently don't own any thingys, or there isn't any sensordata yet. <br/>
+            Click <a [routerLink]="['/tables']">here</a> to add a new thingy!<br/>
+        </h4>
+    </span>
+    <div class="col col-sm-8" *ngIf="userthingyLength > 0">
         <div class="card mb-3">
             <div class="card-header">
                 Your Thingys

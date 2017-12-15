@@ -18,6 +18,7 @@ export class DashboardComponent implements OnInit {
     userthingyStatus = 'Status unknown';
     packageArrived = false;
     showData = false;
+    userthingyLength = 0;
 
     // alert settings
     config = new MatSnackBarConfig();
@@ -72,6 +73,7 @@ export class DashboardComponent implements OnInit {
         ).then(
             () => {
                 for (let userthingyId of this.user.userThingys) {
+                    this.userthingyLength += 1;
                     this.userthingyService.getUserthingyById(userthingyId).then(
                         (userThingy: Userthingy) => {
                             if (userThingy.packageArrivedMessageSent) {
