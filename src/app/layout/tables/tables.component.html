@@ -1,353 +1,119 @@
 <div [@routerTransition]>
-    <app-page-header [heading]="'Tables'" [icon]="'fa-table'"></app-page-header>
+    <app-page-header [heading]="'Add New Thingy'" [icon]="'fa-plus'"></app-page-header>
     <div class="row">
-        <div class="col col-xl-6 col-lg-12">
+        <div class="col-sm-1"></div>
+        <div class="col col-sm-10">
             <div class="card mb-3">
                 <div class="card-header">
-                    Basic example
+                    Add a new Thingy
                 </div>
-                <div class="card-block table-responsive">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Username</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Larry</td>
-                            <td>the Bird</td>
-                            <td>@twitter</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <div style="height:5px"></div>
+                <form [formGroup]="newThingyForm">
+                    <div class="form-content">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-7">
+                                    <div style="margin-top: 5px">
+                                        <strong>Thingy ID</strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control input-underline input-lg" formControlName="thingyID"
+                                           id="thingyID" placeholder="Set new thingy id" [(ngModel)]="userthingy.thingyID" required>
+                                </div>
+                            </div>
+                            <div style="height:5px;"></div>
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-7">
+                                    <div style="margin-top: 5px">
+                                        <strong>Thingy min Temperature</strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control input-underline input-lg" formControlName="thingyMinTemperature" [max]="userthingy.thingyMaxTemperature - 1"
+                                           id="thingyMinTemperature" placeholder="Set min" [(ngModel)]="userthingy.thingyMinTemperature" required>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div style="margin-top: 5px;">
+                                        <strong>°C</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="height:5px;"></div>
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-7">
+                                    <div style="margin-top: 5px">
+                                        <strong>Thingy max Temperature</strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control input-underline input-lg" formControlName="thingyMaxTemperature" [min]="userthingy.thingyMinTemperature + 1"
+                                           id="thingyMaxTemperature" placeholder="Set max" [(ngModel)]="userthingy.thingyMaxTemperature" required>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div style="margin-top: 5px;">
+                                        <strong>°C</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="height:5px;"></div>
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-7">
+                                    <div style="margin-top: 5px">
+                                        <strong>Destination latitude</strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control input-underline input-lg" formControlName="endLatitude" disabled
+                                           id="endLatitude" placeholder="-" [(ngModel)]="userthingy.endLatitude" required>
+                                </div>
+                            </div>
+                            <div style="height:5px;"></div>
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-7">
+                                    <div style="margin-top: 5px">
+                                        <strong>Destination longitude</strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control input-underline input-lg" formControlName="endLongitude" disabled
+                                           id="endLongitude" placeholder="-" [(ngModel)]="userthingy.endLongitude" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="card-footer">
+                    <button class="btn rounded-btn pull-right" [disabled]="!newThingyForm.valid" (click)="onAddThingy()"> Add new Thingy </button>
                 </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-header">Table head options</div>
-                <div class="card-block table-responsive">
-                    <table class="table">
-                        <thead class="thead-inverse">
-                        <tr>
-                            <th>#</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Username</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Larry</td>
-                            <td>the Bird</td>
-                            <td>@twitter</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <table class="table">
-                        <thead class="thead-default">
-                        <tr>
-                            <th>#</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Username</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Larry</td>
-                            <td>the Bird</td>
-                            <td>@twitter</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-header">Bordered table</div>
-                <div class="card-block table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Username</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@TwBootstrap</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">4</th>
-                            <td colspan="2">Larry the Bird</td>
-                            <td>@twitter</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-header">Small table</div>
-                <table class="table table-sm">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Username</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
-        <div class="col col-xl-6 col-lg-12">
+    </div>
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col col-sm-10">
             <div class="card mb-3">
-                <div class="card-header">Inverse table</div>
-                <div class="card-block table-responsive">
-                    <table class="table table-inverse">
-                        <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Username</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Larry</td>
-                            <td>the Bird</td>
-                            <td>@twitter</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <div class="card-header">
+                    <div class="row" style="height:30px">
+                        <div class="col-sm-6">
+                            Select delivery address
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group pull-right" style="margin-top:-5px;">
+                                <input placeholder="search for location" autocorrect="off" autocapitalize="off"
+                                       spellcheck="off" type="text" class="form-control" #search [formControl]="searchControl">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-header">Striped Rows</div>
-                <div class="card-block table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead>
-                        <tr>
-                            <th>Page</th>
-                            <th>Visits</th>
-                            <th>% New Visits</th>
-                            <th>Revenue</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>/index.html</td>
-                            <td>1265</td>
-                            <td>32.3%</td>
-                            <td>$321.33</td>
-                        </tr>
-                        <tr>
-                            <td>/about.html</td>
-                            <td>261</td>
-                            <td>33.3%</td>
-                            <td>$234.12</td>
-                        </tr>
-                        <tr>
-                            <td>/sales.html</td>
-                            <td>665</td>
-                            <td>21.3%</td>
-                            <td>$16.34</td>
-                        </tr>
-                        <tr>
-                            <td>/blog.html</td>
-                            <td>9516</td>
-                            <td>89.3%</td>
-                            <td>$1644.43</td>
-                        </tr>
-                        <tr>
-                            <td>/404.html</td>
-                            <td>23</td>
-                            <td>34.3%</td>
-                            <td>$23.52</td>
-                        </tr>
-                        <tr>
-                            <td>/services.html</td>
-                            <td>421</td>
-                            <td>60.3%</td>
-                            <td>$724.32</td>
-                        </tr>
-                        <tr>
-                            <td>/blog/post.html</td>
-                            <td>1233</td>
-                            <td>93.2%</td>
-                            <td>$126.34</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-header">Hoverable rows</div>
-                <table class="card-block table table-hover">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Username</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="card mb-3">
-                <div class="card-header">Contextual classes</div>
-                <table class="card-block table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Username</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="table-active">
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr class="table-success">
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr class="table-info">
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
-                    <tr class="table-warning">
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
-                    <tr class="table-danger">
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12" (mapClick)="placeMarker($event)">
+                    <agm-marker [latitude]="latMarker" [longitude]="lngMarker"></agm-marker>
+                </agm-map>
             </div>
         </div>
     </div>

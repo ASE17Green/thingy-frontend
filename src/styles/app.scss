@@ -4,3 +4,11 @@
 @import "utils";
 @import "rtl";
 @import "responsive";
+
+.snackbar-design {
+    background: lightgray !important;
+    position: fixed !important;
+    top: 2%;
+    right: 2%;
+    z-index: 9999 !important;
+}

@@ -1,11 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbCarouselModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 
-import {
-  TimelineComponent,
-  NotificationComponent,
-  ChatComponent
-} from './components';
+
 import { StatModule } from '../../shared';
 import { DashboardComponent } from './dashboard.component';
 
@@ -21,10 +17,7 @@ describe('DashboardComponent', () => {
         StatModule,
     ],
       declarations: [
-        DashboardComponent,
-        TimelineComponent,
-        NotificationComponent,
-        ChatComponent
+        DashboardComponent
       ]
     })
     .compileComponents();

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
+import { UserService, ThingyService, UserthingyService } from '../../shared/services/index';
+import { User, Userthingy, ThingyData } from '../../shared/models/index';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
 
 @Component({
     selector: 'app-dashboard',
@@ -8,46 +11,107 @@ import { routerTransition } from '../../router.animations';
     animations: [routerTransition()]
 })
 export class DashboardComponent implements OnInit {
-    public alerts: Array<any> = [];
-    public sliders: Array<any> = [];
+    username: string;
+    user = new User();
+    dataNumber: number;
+    lastThingy: ThingyData;
+    userthingyStatus = 'Status unknown';
+    packageArrived = false;
+    showData = false;
+    userthingyLength = 0;
 
-    constructor() {
-        this.sliders.push({
-            imagePath: 'assets/images/slider1.jpg',
-            label: 'First slide label',
-            text: 'Nulla vitae elit libero, a pharetra augue mollis interdum.'
-        }, {
-            imagePath: 'assets/images/slider2.jpg',
-            label: 'Second slide label',
-            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-        }, {
-            imagePath: 'assets/images/slider3.jpg',
-            label: 'Third slide label',
-            text: 'Praesent commodo cursus magna, vel scelerisque nisl consectetur.'
-        });
+    // alert settings
+    config = new MatSnackBarConfig();
 
-        this.alerts.push({
-            id: 1,
-            type: 'success',
-            message: `Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates est animi quibusdam praesentium quam, et perspiciatis,
-                consectetur velit culpa molestias dignissimos
-                voluptatum veritatis quod aliquam! Rerum placeat necessitatibus, vitae dolorum`
-        }, {
-            id: 2,
-            type: 'warning',
-            message: `Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates est animi quibusdam praesentium quam, et perspiciatis,
-                consectetur velit culpa molestias dignissimos
-                voluptatum veritatis quod aliquam! Rerum placeat necessitatibus, vitae dolorum`
-        });
+    constructor(private userService: UserService,
+                private thingyService: ThingyService,
+                private snackbar: MatSnackBar,
+                private userthingyService: UserthingyService) {
+        // alert settings
+        this.config.extraClasses = ['snackbar-design'];
+        this.config.duration = 3000;
+
     }
 
     ngOnInit() {
+        this.userService.getUser().then(
+            (userData: User) => {
+                this.user = userData;
+                return this.user;
+            },
+            error => {
+                console.log('Something went wrong');
+                return null;
+            }).then(
+            () => {
+                if (this.user.userThingys) {
+                    this.thingyService.getLastEntry(this.user.userThingys[0]).then(
+                        (thingyData: ThingyData) => {
+                            this.lastThingy = thingyData;
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                        });
+                }
+            }
+        ).then(
+            () => {
+                if (this.user.userThingys) {
+                    this.thingyService.getThingyById(this.user.userThingys[0]).then(
+                        (thingyData: ThingyData[]) => {
+                            this.dataNumber = thingyData.length;
+                            if(this.dataNumber === 0) {
+                                this.userthingyStatus = 'Ready for delivery';
+                            }
+                        },
+                        error => {
+                            console.log('Something went wrong');
+
+                        });
+                }
+            }
+        ).then(
+            () => {
+                for (let userthingyId of this.user.userThingys) {
+                    this.userthingyLength += 1;
+                    this.userthingyService.getUserthingyById(userthingyId).then(
+                        (userThingy: Userthingy) => {
+                            if (userThingy.packageArrivedMessageSent) {
+                                this.userthingyStatus = 'Package arrived';
+                                this.packageArrived = true;
+                            } else if (userThingy.thingyTemperatureMessageSent) {
+                                this.userthingyStatus = 'Reached critical temperature';
+                            } else if (this.dataNumber === 0) {
+                                this.userthingyStatus = 'Ready for delivery';
+                            } else {
+                                this.userthingyStatus = 'On its way';
+                            }
+                        },
+                        error => {
+                            this.snackbar.open('Couldnt load userthingy');
+                        });
+                }
+            }
+        );
+        this.username = JSON.parse(localStorage.getItem('user')).name;
     }
 
-    public closeAlert(alert: any) {
-        const index: number = this.alerts.indexOf(alert);
-        this.alerts.splice(index, 1);
+    onDeleteUserthingy(id: string) {
+        this.userthingyService.deleteUserthingy(id).then(
+            data => {
+                this.snackbar.open('Thingy ' + id + ' was successfully deleted.', 'close', this.config);
+                this.packageArrived = false;
+                this.userService.getUser().then(
+                    userdata => {
+                        this.user = userdata;
+                    },
+                    error => {
+                        this.snackbar.open('Something went wrong. Please contact an admin', 'close', this.config);
+                    });
+            },
+            error => {
+                console.log(error)
+            });
     }
+
 }

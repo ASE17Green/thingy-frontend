@@ -1,87 +1,459 @@
-import { Component, OnInit } from '@angular/core';
-import { routerTransition } from '../../router.animations';
+import {Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation} from '@angular/core';
+import {routerTransition} from '../../router.animations';
+import {ThingyService, UserService, UserthingyService} from '../../shared/services/index';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
+import { RouterModule, Routes, Router, NavigationStart } from '@angular/router';
+import { Userthingy, User, ThingyData } from '../../shared/models/index'
+import * as d3 from 'd3';
+
+import * as $ from 'jquery';
 
 @Component({
     selector: 'app-charts',
     templateUrl: './charts.component.html',
     styleUrls: ['./charts.component.scss'],
-    animations: [routerTransition()]
+    animations: [routerTransition()],
 })
-export class ChartsComponent implements OnInit {
-    // bar chart
-    public barChartOptions: any = {
-        scaleShowVerticalLines: false,
-        responsive: true
+
+export class ChartsComponent implements OnInit, OnChanges {
+    user: User;
+    thingyData: ThingyData[];
+    lastThingy: ThingyData;
+    userthingy: Userthingy;
+
+    graphPoints = 60;
+    showGraphs = false;
+    showTempGraph = false;
+    showPresGraph = false;
+    showHumGraph = false;
+    showEco2Graph = false;
+
+    lastThingyDate: Date;
+
+    // alert settings
+    config = new MatSnackBarConfig();
+
+    // table sorting and pagination stuff
+    key: string = 'date';
+    reverse: boolean = true;
+    p: number = 1;
+
+    title: string = 'Current Thingy Position';
+    latMap: number = 0;
+    lngMap: number = 0;
+
+    latMarker: number = 0;
+    lngMarker: number = 0;
+
+    dest_lat1 = 0;
+    dest_lat2 = 0;
+    dest_lng1 = 0;
+    dest_lng2 = 0;
+
+    gaugeDefType = "arch";
+    gaugeDefValue = 0;
+    gaugeDefLabel = "-";
+    gaugeDefAppendText = "-";
+    gaugeDefThresholdConfig = {
+        '0': {color: 'red'},
+        '10': {color: 'orange'},
+        '20': {color: 'green'},
+        '80': {color: 'orange'},
+        '90': {color: 'red'}
     };
-    public barChartLabels: string[] = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
-    public barChartType = 'bar';
-    public barChartLegend = true;
 
-    public barChartData: any[] = [
-        { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
-        { data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B' }
-    ];
-    // Doughnut
-    public doughnutChartLabels: string[] = ['Download Sales', 'In-Store Sales', 'Mail-Order Sales'];
-    public doughnutChartData: number[] = [350, 450, 100];
-    public doughnutChartType = 'doughnut';
-    // Radar
-    public radarChartLabels: string[] = ['Eating', 'Drinking', 'Sleeping', 'Designing', 'Coding', 'Cycling', 'Running'];
-    public radarChartData: any = [
-        { data: [65, 59, 90, 81, 56, 55, 40], label: 'Series A' },
-        { data: [28, 48, 40, 19, 96, 27, 100], label: 'Series B' }
-    ];
-    public radarChartType = 'radar';
-    // Pie
-    public pieChartLabels: string[] = ['Download Sales', 'In-Store Sales', 'Mail Sales'];
-    public pieChartData: number[] = [300, 500, 100];
-    public pieChartType = 'pie';
-    // PolarArea
-    public polarAreaChartLabels: string[] = ['Download Sales', 'In-Store Sales', 'Mail Sales', 'Telesales', 'Corporate Sales'];
-    public polarAreaChartData: number[] = [300, 500, 100, 40, 120];
-    public polarAreaLegend = true;
+    gaugeTempValue = 0;
+    gaugeTempMinValue = 0;
+    gaugeTempMaxValue = 100;
+    gaugeTempLabel = "Temperature";
+    gaugeTempAppendText = "°C";
+    gaugeTempThresholdConfig = {};
 
-    public polarAreaChartType = 'polarArea';
-    // lineChart
-    public lineChartData: Array<any> = [
-        { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
-        { data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B' },
-        { data: [18, 48, 77, 9, 100, 27, 40], label: 'Series C' }
-    ];
-    public lineChartLabels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+    gaugePressValue = 0;
+    gaugePressLabel = "Pressure";
+    gaugePressAppendText = "Pa";
+
+    gaugeHumValue = 0;
+    gaugeHumLabel = "Humidity";
+    gaugeHumAppendText = "%";
+
+    gaugeEcoValue = 0;
+    gaugeEcoLabel = "CO₂";
+    gaugeEcoAppendText = "ppm";
+
+    rgbaColor = 'rgba(0, 0, 0, 0)';
+
+    /*______________ line chart data __________________*/
+
+    public lineChartLabels: Array<any> = [];
     public lineChartOptions: any = {
         responsive: true
     };
-    public lineChartColors: Array<any> = [
-        { // grey
-            backgroundColor: 'rgba(148,159,177,0.2)',
-            borderColor: 'rgba(148,159,177,1)',
-            pointBackgroundColor: 'rgba(148,159,177,1)',
+    public lineChartLegend: boolean = true;
+    public lineChartType: string = 'line';
+    public accelChartData: Array<any> = [
+        { data: [], label: 'Acceleration X' },
+        { data: [], label: 'Acceleration Y' },
+        { data: [], label: 'Acceleration Z' }
+    ];
+    public polylineData: Array<any>;
+    public tempChartData: Array<any> = [
+        { data: [], label: 'Temperature [°C]' }
+    ];
+    public presChartData: Array<any> = [
+        { data: [], label: 'Pressure [Pa]' }
+    ];
+    public humChartData: Array<any> = [
+        { data: [], label: 'Humidity [%]' }
+    ];
+    public eco2ChartData: Array<any> = [
+        { data: [], label: 'Eco2' }
+    ];
+
+    public accelChartColors: Array<any> = [
+        {
+            // red
+            backgroundColor: 'rgba(192, 57, 43,0.2)',
+            borderColor: 'rgba(192, 57, 43,1)',
+            pointBackgroundColor: 'rgba(192, 57, 43,1)',
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+            pointHoverBorderColor: 'rgba(192, 57, 43,0.8)'
         },
-        { // dark grey
-            backgroundColor: 'rgba(77,83,96,0.2)',
-            borderColor: 'rgba(77,83,96,1)',
-            pointBackgroundColor: 'rgba(77,83,96,1)',
+        {
+            // blue
+            backgroundColor: 'rgba(41, 128, 185,0.2)',
+            borderColor: 'rgba(41, 128, 185,1)',
+            pointBackgroundColor: 'rgba(41, 128, 185,1)',
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(77,83,96,1)'
+            pointHoverBorderColor: 'rgba(41, 128, 185,1)'
         },
-        { // grey
-            backgroundColor: 'rgba(148,159,177,0.2)',
-            borderColor: 'rgba(148,159,177,1)',
-            pointBackgroundColor: 'rgba(148,159,177,1)',
+        {
+            // green
+            backgroundColor: 'rgba(39, 174, 96,0.2)',
+            borderColor: 'rgba(39, 174, 96,1)',
+            pointBackgroundColor: 'rgba(39, 174, 96,1)',
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+            pointHoverBorderColor: 'rgba(39, 174, 96,0.8)'
         }
     ];
-    public lineChartLegend = true;
-    public lineChartType = 'line';
 
-    // events
+    public lineChartColors: Array<any> = [
+        {
+            // black
+            backgroundColor: 'rgba(0, 0, 0,0.2)',
+            borderColor: 'rgba(0, 0, 0,1)',
+            pointBackgroundColor: 'rgba(0, 0, 0,1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(0, 0, 0,0.8)'
+        }
+    ];
+
+
+    constructor(private thingyService: ThingyService,
+                private userService: UserService,
+                private snackbar: MatSnackBar,
+                private userthingyService: UserthingyService,
+                private router: Router) {
+        // alert settings
+        this.config.extraClasses = ['snackbar-design'];
+        this.config.duration = 3000;
+
+        this.getAllData();
+
+        const refreshInterval = setInterval(() => { this.refreshData(); }, 2000);
+        router.events.forEach((event) => {
+            if (event instanceof NavigationStart) {
+                clearInterval(refreshInterval);
+            }
+        });
+    }
+
+    ngOnInit() {
+        /*
+        this.latMap = this.latMarker = this.randomNumberFromInterval(40, 50);
+        this.lngMap = this.lngMarker = this.randomNumberFromInterval(7, 8);
+        */
+    }
+
+    ngOnChanges() {
+
+    }
+
+    sort(key){
+        this.key = key;
+        this.reverse = !this.reverse;
+    }
+
+    initLastThingyData(): void {
+        // map
+        this.latMap = this.lastThingy.latitude;
+        this.lngMap = this.lastThingy.longitude;
+        this.latMarker = this.lastThingy.latitude;
+        this.lngMarker = this.lastThingy.longitude;
+        console.log(this.latMarker);
+        console.log(this.lngMarker);
+
+        // gauges
+        this.gaugeTempValue = this.lastThingy.temperature;
+        this.gaugePressValue = this.lastThingy.pressure;
+        this.gaugeHumValue = this.lastThingy.humidity;
+        this.gaugeEcoValue = this.lastThingy.eco2;
+
+        // color
+        let colorMax = Math.max(this.lastThingy.colorRed, this.lastThingy.colorGreen, this.lastThingy.colorBlue);
+
+        this.rgbaColor = 'rgba('
+            + Math.round(this.lastThingy.colorRed / colorMax * 255)
+            + ','
+            + Math.round(this.lastThingy.colorGreen / colorMax * 255)
+            + ','
+            + Math.round(this.lastThingy.colorBlue / colorMax * 255)
+            + ','
+            + 1
+            + ')';
+    }
+
+    initUserthingyData(): void {
+        // temperature intervals
+        if (this.userthingy) {
+            let minTemp = this.userthingy.thingyMinTemperature;
+            let maxTemp = this.userthingy.thingyMaxTemperature;
+            this.gaugeTempMinValue = minTemp - 10;
+            this.gaugeTempMaxValue = maxTemp + 10;
+            this.gaugeTempThresholdConfig[minTemp - 10] = {color: 'red'};
+            this.gaugeTempThresholdConfig[minTemp] = {color: 'orange'};
+            this.gaugeTempThresholdConfig[minTemp + 5] = {color: 'green'};
+            this.gaugeTempThresholdConfig[maxTemp - 5] = {color: 'orange'};
+            this.gaugeTempThresholdConfig[maxTemp] = {color: 'red'};
+
+            let coef = 0.000089;
+            this.dest_lng1 = this.userthingy.endLongitude - coef * 2;
+            this.dest_lng2 = this.userthingy.endLongitude + coef * 2;
+            this.dest_lat1 = this.userthingy.endLatitude + coef / Math.cos(this.userthingy.endLatitude * 0.018);
+            this.dest_lat2 = this.userthingy.endLatitude - coef / Math.cos(this.userthingy.endLatitude * 0.018);
+
+        }
+    }
+
+    initThingyData(): void {
+        let dates = this.getKeyOfThingData(this.thingyData, 'date', this.graphPoints);
+        let accelX = this.getKeyOfThingData(this.thingyData, 'accelerometerX', this.graphPoints);
+        let accelY = this.getKeyOfThingData(this.thingyData, 'accelerometerY', this.graphPoints);
+        let accelZ = this.getKeyOfThingData(this.thingyData, 'accelerometerZ', this.graphPoints);
+        let latitude = this.getKeyOfThingData(this.thingyData, 'latitude', this.thingyData.length);
+        let longitude = this.getKeyOfThingData(this.thingyData, 'longitude', this.thingyData.length);
+        let temp = this.getKeyOfThingData(this.thingyData, 'temperature', this.graphPoints);
+        let pres = this.getKeyOfThingData(this.thingyData, 'pressure', this.graphPoints);
+        let hum = this.getKeyOfThingData(this.thingyData, 'humidity', this.graphPoints);
+        let eco2 = this.getKeyOfThingData(this.thingyData, 'eco2', this.graphPoints);
+
+        // format date for y axis
+        for (let date of dates) {
+            let formatDate = new Date(date);
+            this.lineChartLabels.push('' + formatDate.getHours()
+                + ':' + formatDate.getMinutes()
+                + ':' + formatDate.getSeconds());
+        }
+
+        let accelData = [
+            { data: accelX, label: 'Acceleration X' },
+            { data: accelY, label: 'Acceleration Y' },
+            { data: accelZ, label: 'Acceleration Z' }
+        ];
+        let polyData = [];
+        if (longitude.length === latitude.length) {
+            while (longitude.length !== 0) {
+                polyData.push({longitude: longitude.shift(), latitude: latitude.shift()});
+            }
+        }
+        let tempData = [
+            { data: temp, label: 'Temperature [°C]' }
+        ];
+        let presData = [
+            { data: pres, label: 'Pressure [Pa]' }
+        ];
+        let humData = [
+            { data: hum, label: 'Humidity [%]' }
+        ];
+        let eco2Data = [
+            { data: eco2, label: 'Eco2' }
+        ];
+        this.accelChartData = accelData;
+        this.tempChartData = tempData;
+        this.presChartData = presData;
+        this.humChartData = humData;
+        this.eco2ChartData = eco2Data;
+        this.polylineData = polyData;
+    }
+
+    refreshGraphs(): void {
+        // only refresh if new data is available
+        if (this.lastThingy && this.lastThingy.date !== this.lastThingyDate) {
+            this.lastThingyDate = this.lastThingy.date;
+
+            // format date for y axis
+            let date = new Date(this.lastThingy.date);
+            this.lineChartLabels.push('' + date.getHours()
+                + ':' + date.getMinutes()
+                + ':' + date.getSeconds());
+
+            /***** linegraphs deep clone necessary, else the data won't update *****/
+
+            // acceleration
+            let accelClone = this.accelChartData.map(x => Object.assign({}, x));
+            accelClone[0].data.push(this.lastThingy.accelerometerX);
+            accelClone[1].data.push(this.lastThingy.accelerometerY);
+            accelClone[2].data.push(this.lastThingy.accelerometerZ);
+            this.accelChartData = accelClone;
+
+            let polyClone = this.polylineData.map(x => Object.assign({}, x));
+            polyClone.push({longitude: this.lastThingy.longitude, latitude: this.lastThingy.latitude});
+            this.polylineData = polyClone;
+            this.lngMarker = this.lastThingy.longitude;
+            this.latMarker = this.lastThingy.latitude;
+
+            let tempClone = this.tempChartData.map(x => Object.assign({}, x));
+            tempClone[0].data.push(this.lastThingy.temperature);
+            this.tempChartData = tempClone;
+
+            let presClone = this.presChartData.map(x => Object.assign({}, x));
+            presClone[0].data.push(this.lastThingy.pressure);
+            this.presChartData = presClone;
+
+            let humClone = this.humChartData.map(x => Object.assign({}, x));
+            humClone[0].data.push(this.lastThingy.humidity);
+            this.humChartData = humClone;
+
+            let eco2Clone = this.eco2ChartData.map(x => Object.assign({}, x));
+            eco2Clone[0].data.push(this.lastThingy.eco2);
+            this.eco2ChartData = eco2Clone;
+
+            // gauges
+            this.gaugeTempValue = this.lastThingy.temperature;
+            this.gaugePressValue = this.lastThingy.pressure;
+            this.gaugeHumValue = this.lastThingy.humidity;
+            this.gaugeEcoValue = this.lastThingy.eco2;
+
+            // color
+            let colorMax = Math.max(this.lastThingy.colorRed, this.lastThingy.colorGreen, this.lastThingy.colorBlue);
+
+            this.rgbaColor = 'rgba('
+                + Math.round(this.lastThingy.colorRed / colorMax * 255)
+                + ','
+                + Math.round(this.lastThingy.colorGreen / colorMax * 255)
+                + ','
+                + Math.round(this.lastThingy.colorBlue / colorMax * 255)
+                + ','
+                + 1
+                + ')';
+
+
+        }
+    }
+
+    RandomizeGauge(): void {
+        // acceleration
+        let cloned = this.accelChartData.map(x => Object.assign({}, x));
+        cloned[0].data.push(this.lastThingy.accelerometerX);
+        cloned[1].data.push(this.lastThingy.accelerometerY);
+        cloned[2].data.push(this.lastThingy.accelerometerZ);
+        this.accelChartData = cloned;
+
+        let date = new Date(this.lastThingy.date);
+        this.lineChartLabels.push('' + date.getHours()
+            + ':' + date.getMinutes()
+            + ':' + date.getSeconds());
+    }
+
+    refreshData(): void {
+        if (this.user && this.user.userThingys) {
+            this.thingyService.getThingyById(this.user.userThingys[0]).then(
+                (thingyData: ThingyData[]) => {
+                    this.thingyData = thingyData;
+                    // filter empty date columns
+                    this.thingyData = this.thingyData.filter(function(n){ return n.date != undefined });
+                    //this.snackbar.open('Request successful', 'close', this.config);
+                },
+                error => {
+                    this.snackbar.open('No thingy data available.', 'close', this.config);
+                }).then(
+                () => {
+                    this.thingyService.getLastEntry(this.user.userThingys[0]).then(
+                        (thingyData: ThingyData) => {
+                            this.lastThingy = thingyData;
+                            this.refreshGraphs();
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                        });
+                }
+            );
+        }
+    }
+
+    getAllData(): void {
+        this.userService.getUser().then(
+            (userData: User) => {
+                this.user = userData;
+            },
+            error => {
+                console.log('Something went wrong');
+            }).then(
+            () => {
+                if (this.user.userThingys) {
+                    this.thingyService.getLastEntry(this.user.userThingys[0]).then(
+                        (thingyData: ThingyData) => {
+                            this.lastThingy = thingyData;
+                            this.lastThingyDate = this.lastThingy.date;
+                            this.initLastThingyData();
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                        });
+                }
+            }
+        ).then(
+            () => {
+                if (this.user.userThingys) {
+                    this.thingyService.getThingyById(this.user.userThingys[0]).then(
+                        (thingyData: ThingyData[]) => {
+                            this.thingyData = thingyData;
+                            this.initThingyData();
+                            this.snackbar.open('Request successful', 'close', this.config);
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                            this.snackbar.open('No thingy data available.', 'close', this.config);
+                        });
+                }
+            }
+        ).then(
+            () => {
+                if( this.user.userThingys){
+                    this.userthingyService.getUserthingyById(this.user.userThingys[0]).then(
+                        (userThingy: Userthingy) => {
+                            this.userthingy = userThingy;
+                            this.initUserthingyData();
+                            this.refreshGraphs();
+                        },
+                        error => {
+                            this.snackbar.open('Couldnt load userthingy');
+                        })
+                }
+            }
+        );
+    }
+
+
+    randomNumberFromInterval(min: number, max: number): number {
+        // returns a random number rounded to two decimals between min and max
+        return Math.round((Math.random() * (max - min + 1) + min) * 100) / 100;
+    }
+
     public chartClicked(e: any): void {
         // console.log(e);
     }
@@ -90,31 +462,8 @@ export class ChartsComponent implements OnInit {
         // console.log(e);
     }
 
-    public randomize(): void {
-        // Only Change 3 values
-        const data = [
-            Math.round(Math.random() * 100),
-            59,
-            80,
-            (Math.random() * 100),
-            56,
-            (Math.random() * 100),
-            40
-        ];
-        const clone = JSON.parse(JSON.stringify(this.barChartData));
-        clone[0].data = data;
-        this.barChartData = clone;
-        /**
-         * (My guess), for Angular to recognize the change in the dataset
-         * it has to change the dataset variable directly,
-         * so one way around it, is to clone the data, change it and then
-         * assign it;
-         */
+    getKeyOfThingData(array: ThingyData[], key: string, elements: number) {
+        return array.map(function(item) { return item[key]; }).splice(-elements);
     }
 
-    constructor() {
-    }
-
-    ngOnInit() {
-    }
 }

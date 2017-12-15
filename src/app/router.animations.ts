@@ -48,7 +48,7 @@ export function slideToBottom() {
         ])
     ]);
 }
-
+/*
 export function slideToTop() {
     return trigger('routerTransition', [
         state('void', style({})),
@@ -62,4 +62,24 @@ export function slideToTop() {
             animate('0.1s ease-in-out', style({ transform: 'translateY(-100%)' }))
         ])
     ]);
+}*/
+
+export function slideToTop() {
+    return trigger('routerTransition', [
+
+        // route 'enter' transition
+        transition(':enter', [
+
+            // css styles at start of transition
+            style({ opacity: 1 }),
+
+            // animation and styles at end of transition
+            animate('.3s', style({ opacity: 1 }))
+        ]),
+        transition(':leave', [
+            style({ opacity: 1 }),
+            animate('.3s', style({ opacity: 1 }))
+        ])
+    ]);
 }
+

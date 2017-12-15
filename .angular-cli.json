@@ -21,10 +21,14 @@
             "prefix": "app",
             "styles": [
                 "../node_modules/font-awesome/css/font-awesome.css",
-                "styles/app.scss"
+                "styles/app.scss",
+                "../node_modules/bootstrap-table/dist/bootstrap-table.css"
             ],
             "scripts": [
-                "../node_modules/chart.js/dist/Chart.js"
+                "../node_modules/chart.js/dist/Chart.js",
+                "../node_modules/jquery/dist/jquery.min.js",
+                "../node_modules/bootstrap-table/dist/bootstrap-table.js",
+                "../node_modules/bootstrap-table/dist/locale/bootstrap-table-en-US.js"
             ],
             "environmentSource": "environments/environment.ts",
             "environments": {
