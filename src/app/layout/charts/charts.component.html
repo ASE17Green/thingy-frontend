@@ -246,11 +246,19 @@
                 </div>
                 <div class="card-block">
                     <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12">
-                        <agm-marker [latitude]="latMarker" [longitude]="lngMarker"></agm-marker>
+                        <agm-marker [latitude]="latMarker" [longitude]="lngMarker" [title]="'Current Position'"></agm-marker>
+                        <agm-marker [latitude]="userthingy?.endLatitude" [longitude]="userthingy?.endLongitude" [title]="'Destination'"></agm-marker>
                         <agm-polyline>
                             <ng-container *ngFor="let polyline of polylineData">
                             <agm-polyline-point [latitude]="polyline.latitude" [longitude]="polyline.longitude"></agm-polyline-point>
                             </ng-container>
+                        </agm-polyline>
+                        <agm-polyline [strokeColor]="'Red'">
+                            <agm-polyline-point [latitude]="dest_lat1" [longitude]="dest_lng1"></agm-polyline-point>
+                            <agm-polyline-point [latitude]="dest_lat1" [longitude]="dest_lng2"></agm-polyline-point>
+                            <agm-polyline-point [latitude]="dest_lat2" [longitude]="dest_lng2"></agm-polyline-point>
+                            <agm-polyline-point [latitude]="dest_lat2" [longitude]="dest_lng1"></agm-polyline-point>
+                            <agm-polyline-point [latitude]="dest_lat1" [longitude]="dest_lng1"></agm-polyline-point>
                         </agm-polyline>
                     </agm-map>
                 </div>

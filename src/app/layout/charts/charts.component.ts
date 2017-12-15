@@ -45,8 +45,10 @@ export class ChartsComponent implements OnInit, OnChanges {
     latMarker: number = 0;
     lngMarker: number = 0;
 
-    latPoly = [46.678418, 48.678418, 49.878418];
-    lngPoly = [7.809007, 8.909007, 9.309007];
+    dest_lat1 = 0;
+    dest_lat2 = 0;
+    dest_lng1 = 0;
+    dest_lng2 = 0;
 
     gaugeDefType = "arch";
     gaugeDefValue = 0;
@@ -227,6 +229,13 @@ export class ChartsComponent implements OnInit, OnChanges {
             this.gaugeTempThresholdConfig[minTemp + 5] = {color: 'green'};
             this.gaugeTempThresholdConfig[maxTemp - 5] = {color: 'orange'};
             this.gaugeTempThresholdConfig[maxTemp] = {color: 'red'};
+
+            let coef = 0.000089;
+            this.dest_lng1 = this.userthingy.endLongitude - coef * 2;
+            this.dest_lng2 = this.userthingy.endLongitude + coef * 2;
+            this.dest_lat1 = this.userthingy.endLatitude + coef / Math.cos(this.userthingy.endLatitude * 0.018);
+            this.dest_lat2 = this.userthingy.endLatitude - coef / Math.cos(this.userthingy.endLatitude * 0.018);
+
         }
     }
 
