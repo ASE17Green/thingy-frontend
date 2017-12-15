@@ -45,12 +45,8 @@ export class ChartsComponent implements OnInit, OnChanges {
     latMarker: number = 0;
     lngMarker: number = 0;
 
-    latPoly1: number = 51.678418;
-    latPoly2: number = 50.678418;
-    latPoly3: number = 49.878418;
-    lngPoly1: number = 7.809007;
-    lngPoly2: number = 8.909007;
-    lngPoly3: number = 9.309007;
+    latPoly = [46.678418, 48.678418, 49.878418];
+    lngPoly = [7.809007, 8.909007, 9.309007];
 
     gaugeDefType = "arch";
     gaugeDefValue = 0;
@@ -98,6 +94,7 @@ export class ChartsComponent implements OnInit, OnChanges {
         { data: [], label: 'Acceleration Y' },
         { data: [], label: 'Acceleration Z' }
     ];
+    public polylineData: Array<any>;
     public tempChartData: Array<any> = [
         { data: [], label: 'Temperature [°C]' }
     ];
@@ -236,6 +233,8 @@ export class ChartsComponent implements OnInit, OnChanges {
         let accelX = this.getKeyOfThingData(this.thingyData, 'accelerometerX', this.graphPoints);
         let accelY = this.getKeyOfThingData(this.thingyData, 'accelerometerY', this.graphPoints);
         let accelZ = this.getKeyOfThingData(this.thingyData, 'accelerometerZ', this.graphPoints);
+        let latitude = this.getKeyOfThingData(this.thingyData, 'latitude', this.thingyData.length);
+        let longitude = this.getKeyOfThingData(this.thingyData, 'longitude', this.thingyData.length);
         let temp = this.getKeyOfThingData(this.thingyData, 'temperature', this.graphPoints);
         let pres = this.getKeyOfThingData(this.thingyData, 'pressure', this.graphPoints);
         let hum = this.getKeyOfThingData(this.thingyData, 'humidity', this.graphPoints);
@@ -255,6 +254,12 @@ export class ChartsComponent implements OnInit, OnChanges {
             { data: accelY, label: 'Acceleration Y' },
             { data: accelZ, label: 'Acceleration Z' }
         ];
+        let polyData = [];
+        if (longitude.length === latitude.length) {
+            while (longitude.length !== 0) {
+                polyData.push({longitude: longitude.shift(), latitude: latitude.shift()});
+            }
+        }
         let tempData = [
             { data: temp, label: 'Temperature [°C]' }
         ];
@@ -272,7 +277,7 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.presChartData = presData;
         this.humChartData = humData;
         this.eco2ChartData = eco2Data;
-
+        this.polylineData = polyData;
     }
 
     refreshGraphs(): void {
@@ -294,6 +299,12 @@ export class ChartsComponent implements OnInit, OnChanges {
             accelClone[1].data.push(this.lastThingy.accelerometerY);
             accelClone[2].data.push(this.lastThingy.accelerometerZ);
             this.accelChartData = accelClone;
+
+            let polyClone = this.polylineData.map(x => Object.assign({}, x));
+            polyClone.push({longitude: this.lastThingy.longitude, latitude: this.lastThingy.latitude});
+            this.polylineData = polyClone;
+            this.lngMarker = this.lastThingy.longitude;
+            this.latMarker = this.lastThingy.latitude;
 
             let tempClone = this.tempChartData.map(x => Object.assign({}, x));
             tempClone[0].data.push(this.lastThingy.temperature);

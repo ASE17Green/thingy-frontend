@@ -239,32 +239,20 @@
     </div>
 
     <div class="row" id="test">
-        <div class="col-sm-9">
+        <div class="col-sm-12">
             <div class="card mb-3">
                 <div class="card-header">
-                    Current Location
+                    Current Location and path
                 </div>
                 <div class="card-block">
                     <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12">
                         <agm-marker [latitude]="latMarker" [longitude]="lngMarker"></agm-marker>
-                        <!--
                         <agm-polyline>
-                            <agm-polyline-point [latitude]="latPoly1" [longitude]="lngPoly1"></agm-polyline-point>
-                            <agm-polyline-point [latitude]="latPoly2" [longitude]="lngPoly2"></agm-polyline-point>
-                            <agm-polyline-point [latitude]="latPoly3" [longitude]="lngPoly3"></agm-polyline-point>
+                            <ng-container *ngFor="let polyline of polylineData">
+                            <agm-polyline-point [latitude]="polyline.latitude" [longitude]="polyline.longitude"></agm-polyline-point>
+                            </ng-container>
                         </agm-polyline>
-                        -->
                     </agm-map>
-                </div>
-            </div>
-        </div>
-        <div class="col col-sm-3">
-            <div class="card mb-3">
-                <div class="card-header">
-                    Data Randomizer
-                </div>
-                <div class="card-block">
-                    <button class="btn rounded-btn" (click)="RandomizeGauge()">Randomize</button>
                 </div>
             </div>
         </div>
