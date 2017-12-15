@@ -192,6 +192,8 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.lngMap = this.lastThingy.longitude;
         this.latMarker = this.lastThingy.latitude;
         this.lngMarker = this.lastThingy.longitude;
+        console.log(this.latMarker);
+        console.log(this.lngMarker);
 
         // gauges
         this.gaugeTempValue = this.lastThingy.temperature;
@@ -243,7 +245,6 @@ export class ChartsComponent implements OnInit, OnChanges {
         // format date for y axis
         for (let date of dates) {
             let formatDate = new Date(date);
-            console.log('date: ' + date);
             this.lineChartLabels.push('' + formatDate.getHours()
                 + ':' + formatDate.getMinutes()
                 + ':' + formatDate.getSeconds());
@@ -389,15 +390,12 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.userService.getUser().then(
             (userData: User) => {
                 this.user = userData;
-                console.log('inside: ' + this.user);
-                return this.user;
             },
             error => {
                 console.log('Something went wrong');
-                return null;
             }).then(
             () => {
-                if (this.user.userThingys && this.lastThingy) {
+                if (this.user.userThingys) {
                     this.thingyService.getLastEntry(this.user.userThingys[0]).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
