@@ -1,19 +1,35 @@
 <div [@routerTransition]>
     <h2 class="text-muted">Dashboard <small>of {{username}}</small></h2>
 
-        <h4>
-        Hi!<br/>
-        <span *ngIf="dataNumber && dataNumber>0">
-            You currently have {{dataNumber}} entries in your Thingy History.<br/>
-            Your last entry was at {{lastThingy?.date | date: 'dd/MM/yy, hh:mm:ss'}}.<br/>
-            These are the sensor data:<br/>
-        </span>
-        <span *ngIf="!dataNumber || dataNumber<=0">
-            You currently don't own any thingys, or there isn't any sensordata yet. <br/>
-            Click <a [routerLink]="['/tables']">here</a> to add a new thingy!<br/>
-        </span>
-        </h4>
-    <ng-container *ngIf="dataNumber && dataNumber!=0">
+    <h4> Hi! </h4>
+    <div class="col col-sm-8">
+        <div class="card mb-3">
+            <div class="card-header">
+                Your Thingys
+            </div>
+            <div class="card-block">
+                <table class="table">
+                    <tr>
+                        <th>Thingy Id</th>
+                        <th>Entries</th>
+                        <th>Status</th>
+                        <th>Options</th>
+                    </tr>
+                    <tr *ngFor="let TId of user.userThingys">
+                        <td>{{ TId }}</td>
+                        <td>{{dataNumber}}</td>
+                        <td> {{ userthingyStatus }} </td>
+                        <td>
+                            <i style="cursor: pointer; padding-right:5px;" (click)="showData = !showData" class="fa fa-eye" aria-hidden="true"></i>
+                            <i style="cursor: pointer;" (click)="onDeleteUserthingy(TId)" class="fa fa-ban"></i>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <ng-container *ngIf="dataNumber && dataNumber!=0 && showData">
         <table class="table table-striped table-responsive">
             <thead>
             <tr>

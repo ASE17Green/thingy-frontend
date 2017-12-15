@@ -1,49 +1,119 @@
 <div [@routerTransition]>
     <app-page-header [heading]="'Add New Thingy'" [icon]="'fa-plus'"></app-page-header>
     <div class="row">
-        <div class="col col-sm-6">
+        <div class="col-sm-1"></div>
+        <div class="col col-sm-10">
             <div class="card mb-3">
                 <div class="card-header">
                     Add a new Thingy
                 </div>
-
+                <div style="height:5px"></div>
                 <form [formGroup]="newThingyForm">
                     <div class="form-content">
                         <div class="form-group">
-                            <input type="text" class="form-control input-underline input-lg" formControlName="thingyID"
-                                   id="thingyID" placeholder="New thingy id" [(ngModel)]="userthingy.thingyID" required>
-                            <input type="text" class="form-control input-underline input-lg" formControlName="thingyMaxTemperature"
-                                   id="thingyMaxTemperature" placeholder="New thingyMaxTemperature" [(ngModel)]="userthingy.thingyMaxTemperature" required>
-                            <input type="text" class="form-control input-underline input-lg" formControlName="thingyMinTemperature"
-                                   id="thingyMinTemperature" placeholder="New thingyMinTemperature" [(ngModel)]="userthingy.thingyMinTemperature" required>
-                            <input type="text" class="form-control input-underline input-lg" formControlName="endLatitude"
-                                   id="endLatitude" placeholder="New thingy endLatitude" [(ngModel)]="userthingy.endLatitude" required>
-                            <input type="text" class="form-control input-underline input-lg" formControlName="endLongitude"
-                                   id="endLongitude" placeholder="New thingy endLongitude" [(ngModel)]="userthingy.endLongitude" required>
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-7">
+                                    <div style="margin-top: 5px">
+                                        <strong>Thingy ID</strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control input-underline input-lg" formControlName="thingyID"
+                                           id="thingyID" placeholder="Set new thingy id" [(ngModel)]="userthingy.thingyID" required>
+                                </div>
+                            </div>
+                            <div style="height:5px;"></div>
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-7">
+                                    <div style="margin-top: 5px">
+                                        <strong>Thingy min Temperature</strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control input-underline input-lg" formControlName="thingyMinTemperature" [max]="userthingy.thingyMaxTemperature - 1"
+                                           id="thingyMinTemperature" placeholder="Set min" [(ngModel)]="userthingy.thingyMinTemperature" required>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div style="margin-top: 5px;">
+                                        <strong>°C</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="height:5px;"></div>
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-7">
+                                    <div style="margin-top: 5px">
+                                        <strong>Thingy max Temperature</strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control input-underline input-lg" formControlName="thingyMaxTemperature" [min]="userthingy.thingyMinTemperature + 1"
+                                           id="thingyMaxTemperature" placeholder="Set max" [(ngModel)]="userthingy.thingyMaxTemperature" required>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div style="margin-top: 5px;">
+                                        <strong>°C</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="height:5px;"></div>
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-7">
+                                    <div style="margin-top: 5px">
+                                        <strong>Destination latitude</strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control input-underline input-lg" formControlName="endLatitude" disabled
+                                           id="endLatitude" placeholder="-" [(ngModel)]="userthingy.endLatitude" required>
+                                </div>
+                            </div>
+                            <div style="height:5px;"></div>
+                            <div class="row">
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-7">
+                                    <div style="margin-top: 5px">
+                                        <strong>Destination longitude</strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control input-underline input-lg" formControlName="endLongitude" disabled
+                                           id="endLongitude" placeholder="-" [(ngModel)]="userthingy.endLongitude" required>
+                                </div>
+                            </div>
                         </div>
-
                     </div>
-                    <button class="btn rounded-btn pull-right" [disabled]="!newThingyForm.valid" (click)="onAddThingy()"> Add </button>
                 </form>
+                <div class="card-footer">
+                    <button class="btn rounded-btn pull-right" [disabled]="!newThingyForm.valid" (click)="onAddThingy()"> Add new Thingy </button>
+                </div>
             </div>
         </div>
-        <div class="col col-sm-6">
+    </div>
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col col-sm-10">
             <div class="card mb-3">
                 <div class="card-header">
-                    Your Thingys
+                    <div class="row" style="height:30px">
+                        <div class="col-sm-6">
+                            Select delivery address
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group pull-right" style="margin-top:-5px;">
+                                <input placeholder="search for location" autocorrect="off" autocapitalize="off"
+                                       spellcheck="off" type="text" class="form-control" #search [formControl]="searchControl">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-block">
-                    <table class="table">
-                        <tr>
-                            <th>Thingy Id</th>
-                            <th>Options</th>
-                        </tr>
-                        <tr *ngFor="let TId of user.userThingys">
-                            <td>{{ TId }}</td>
-                            <td><i (click)="onDeleteUserthingy(TId)" class="fa fa-ban"></i></td>
-                        </tr>
-                    </table>
-                </div>
+                <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12" (mapClick)="placeMarker($event)">
+                    <agm-marker [latitude]="latMarker" [longitude]="lngMarker"></agm-marker>
+                </agm-map>
             </div>
         </div>
     </div>

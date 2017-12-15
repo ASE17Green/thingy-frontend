@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, NgZone, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { routerTransition } from '../../router.animations';
 import { UserService, UserthingyService } from '../../shared/services/index';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material';
 import { User, Userthingy } from '../../shared/models/index';
+import { } from 'googlemaps';
+import { MapsAPILoader } from '@agm/core';
 
 declare const jQuery: any;
 
@@ -23,11 +25,23 @@ export class TablesComponent implements OnInit {
 
     user: User = new User();
 
+    public searchControl: FormControl;
+
+    @ViewChild('search')
+    public searchElementRef: ElementRef;
+
+    latMap: number = 46.9480;
+    lngMap: number = 7.4474;
+    latMarker: number;
+    lngMarker: number;
+
     constructor(private userService: UserService,
                 private userthingyService: UserthingyService,
                 private fb: FormBuilder,
                 private snackbar: MatSnackBar,
-                public router: Router) {
+                public router: Router,
+                private mapsAPILoader: MapsAPILoader,
+                private ngZone: NgZone) {
         this.createForm();
     }
     ngOnInit() {
@@ -35,8 +49,30 @@ export class TablesComponent implements OnInit {
         this.config.extraClasses = ['snackbar-design'];
         this.config.duration = 3000;
 
-        // get user profile
-        //this.user = JSON.parse(localStorage.getItem('user'));
+        this.searchControl = new FormControl();
+
+        this.setCurrentPosition();
+
+        this.mapsAPILoader.load().then(() => {
+            let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
+                types: ['address']
+            });
+            autocomplete.addListener('place_changed', () => {
+                this.ngZone.run(() => {
+                    //get the place result
+                    let place: google.maps.places.PlaceResult = autocomplete.getPlace();
+
+                    //verify result
+                    if (place.geometry === undefined || place.geometry === null) {
+                        return;
+                    }
+
+                    //set latitude, longitude and zoom
+                    this.userthingy.endLatitude = this.latMap = this.latMarker = place.geometry.location.lat();
+                    this.userthingy.endLongitude = this.lngMap = this.lngMarker = place.geometry.location.lng();
+                });
+            });
+        });
 
 
         this.userService.getUser().then(
@@ -91,21 +127,17 @@ export class TablesComponent implements OnInit {
 
     }
 
-    onDeleteUserthingy(id: string) {
-        this.userthingyService.deleteUserthingy(id).then(
-            data => {
-                console.log('userthingy deleted');
-                this.userService.getUser().then(
-                    userdata => {
-                        this.user = userdata;
-                    },
-                    error => {
-                        this.snackbar.open('Something went wrong. Please contact an admin', 'close', this.config);
-                        this.router.navigate(['/login']);
-                    });
-            },
-            error => {
-                console.log(error)
+    private setCurrentPosition() {
+        if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                this.userthingy.endLatitude = this.latMap = this.latMarker = position.coords.latitude;
+                this.userthingy.endLongitude = this.lngMap = this.lngMarker = position.coords.longitude;
             });
+        }
+    }
+
+    placeMarker($event) {
+        this.userthingy.endLatitude = this.latMarker = $event.coords.lat;
+        this.userthingy.endLongitude = this.lngMarker = $event.coords.lng;
     }
 }
