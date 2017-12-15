@@ -16,6 +16,7 @@ export class DashboardComponent implements OnInit {
     dataNumber: number;
     lastThingy: ThingyData;
     userthingyStatus = 'Status unknown';
+    packageArrived = false;
     showData = false;
 
     // alert settings
@@ -58,6 +59,9 @@ export class DashboardComponent implements OnInit {
                     this.thingyService.getThingyById(this.user.userThingys[0]).then(
                         (thingyData: ThingyData[]) => {
                             this.dataNumber = thingyData.length;
+                            if(this.dataNumber === 0) {
+                                this.userthingyStatus = 'Ready for delivery';
+                            }
                         },
                         error => {
                             console.log('Something went wrong');
@@ -72,6 +76,7 @@ export class DashboardComponent implements OnInit {
                         (userThingy: Userthingy) => {
                             if (userThingy.packageArrivedMessageSent) {
                                 this.userthingyStatus = 'Package arrived';
+                                this.packageArrived = true;
                             } else if (userThingy.thingyTemperatureMessageSent) {
                                 this.userthingyStatus = 'Reached critical temperature';
                             } else if (this.dataNumber === 0) {
@@ -93,6 +98,7 @@ export class DashboardComponent implements OnInit {
         this.userthingyService.deleteUserthingy(id).then(
             data => {
                 this.snackbar.open('Thingy ' + id + ' was successfully deleted.', 'close', this.config);
+                this.packageArrived = false;
                 this.userService.getUser().then(
                     userdata => {
                         this.user = userdata;

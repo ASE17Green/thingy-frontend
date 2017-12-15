@@ -21,7 +21,7 @@
                         <td> {{ userthingyStatus }} </td>
                         <td>
                             <i style="cursor: pointer; padding-right:5px;" (click)="showData = !showData" class="fa fa-eye" aria-hidden="true"></i>
-                            <i style="cursor: pointer;" (click)="onDeleteUserthingy(TId)" class="fa fa-ban"></i>
+                            <i *ngIf="packageArrived" style="cursor: pointer;" (click)="onDeleteUserthingy(TId)" class="fa fa-ban"></i>
                         </td>
                     </tr>
                 </table>
@@ -77,4 +77,9 @@
             </tbody>
         </table>
     </ng-container>
+
+    <h3 *ngIf="packageArrived"> One of your Packages arrived! Click <a [routerLink]="['/dashboard']" (click)="onDeleteUserthingy(user.userThingys[0])">here</a> to delete it. <br>
+        Or go to <a [routerLink]="['/charts']">Sensordata Overview</a> to review your data. <br>
+        Remember that you pay for our service as long as you don't delete your thingy!
+    </h3>
 </div>
