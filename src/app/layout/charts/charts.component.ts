@@ -23,6 +23,9 @@ export class ChartsComponent implements OnInit, OnChanges {
     userthingy: Userthingy;
     userthingyA: Userthingy;
 
+    arrivedMsgSent = false;
+    tempMsgSent = false;
+
     graphPoints = 60;
     showGraphs = false;
     showTempGraph = false;
@@ -421,6 +424,22 @@ export class ChartsComponent implements OnInit, OnChanges {
                             console.log('Something went wrong');
                         });
                 }
+            ).then(
+                () => {
+                    this.userthingyService.getUserthingyById(userthingyTemp).then(
+                        (uThingy: Userthingy) => {
+                            if(uThingy.packageArrivedMessageSent && !this.arrivedMsgSent){
+                                this.snackbar.open('Your package arrived!', 'close', this.config);
+                                this.arrivedMsgSent = true;
+                            } else if(uThingy.thingyTemperatureMessageSent && !this.tempMsgSent) {
+                                this.snackbar.open('Your package reached a critical temperature!', 'close', this.config);
+                                this.tempMsgSent = true;
+                            }
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                        });
+                }
             );
         }
     }
@@ -472,7 +491,7 @@ export class ChartsComponent implements OnInit, OnChanges {
                             this.thingyData = thingyData;
                             this.thingyData = thingyData;
                             this.initThingyData();
-                            this.snackbar.open('Request successful', 'close', this.config);
+                            //this.snackbar.open('Request successful', 'close', this.config);
                         },
                         error => {
                             console.log('Something went wrong');
@@ -488,7 +507,7 @@ export class ChartsComponent implements OnInit, OnChanges {
                             this.thingyData = thingyData;
                             this.initThingyData();
                             this.showAccelGraph = true;
-                            this.snackbar.open('Request successful', 'close', this.config);
+                            //this.snackbar.open('Request successful', 'close', this.config);
                         },
                         error => {
                             console.log('Something went wrong');
@@ -552,6 +571,9 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.showHumGraph = false;
         this.showEco2Graph = false;
         this.showAccelGraph = false;
+
+        this.arrivedMsgSent = false;
+        this.tempMsgSent = false;
 
         this.userthingy = userthingy;
         this.userthingyA = userthingy;

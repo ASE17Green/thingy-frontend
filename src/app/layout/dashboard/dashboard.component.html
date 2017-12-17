@@ -36,11 +36,20 @@
         </div>
     </div>
     <ng-container *ngFor="let userthingy of userthingys">
-        <h3 *ngIf="userthingy.packageArrivedMessageSent">
-            Your package of thingy <strong>{{userthingy.thingyID}}</strong> arrived! <br>
+        <div *ngIf="userthingy.packageArrivedMessageSent" class="alert alert-info">
+            <h4>
+            <strong>Your package of thingy {{userthingy.thingyID}} arrived! </strong><br>
             Click <a [routerLink]="['/dashboard']" (click)="onDeleteUserthingy(userthingy.thingyID)">here</a> to delete it. <br>
             Or go to <a [routerLink]="['/sensordata']">Sensordata Overview</a> to review your data. <br>
-            Remember that you pay for our service as long as you don't delete your thingy!
-        </h3>
+            </h4>
+            <small>Remember that you pay for our service as long as you don't delete your thingy!</small>
+
+        </div>
+        <div *ngIf="!userthingy.packageArrivedMessageSent && userthingy.thingyTemperatureMessageSent" class="alert alert-danger">
+            <h4>
+                <strong>Your package of thingy {{userthingy.thingyID}} reached a critical temperature!</strong> <br>
+                Go to <a style="color:darkblue" [routerLink]="['/sensordata']">Sensordata Overview</a> to review your data. <br>
+            </h4>
+        </div>
     </ng-container>
 </div>

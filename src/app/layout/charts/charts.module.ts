@@ -9,6 +9,7 @@ import { NgxGaugeModule } from 'ngx-gauge';
 import { AgmCoreModule } from '@agm/core';
 import { Ng2OrderModule } from 'ng2-order-pipe';
 import {NgxPaginationModule} from 'ngx-pagination';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
     imports: [
@@ -19,6 +20,7 @@ import {NgxPaginationModule} from 'ngx-pagination';
         NgxGaugeModule,
         Ng2OrderModule,
         NgxPaginationModule,
+        FormsModule,
         AgmCoreModule.forRoot({
             apiKey: 'AIzaSyBXHTRKZIH4ObdF7hf8S3amZhi_l0qWb4U'
         })
