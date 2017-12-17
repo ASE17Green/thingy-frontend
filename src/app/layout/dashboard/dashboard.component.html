@@ -5,7 +5,7 @@
     <span *ngIf="user?.userThingys?.length <= 0">
         <h4>
             You currently don't own any thingys<br/>
-            Click <a [routerLink]="['/tables']">here</a> to add a new thingy!<br/>
+            Click <a [routerLink]="['/addthingy']">here</a> to add a new thingy!<br/>
         </h4>
     </span>
     <div class="col col-sm-8" *ngIf="user?.userThingys?.length > 0">
@@ -26,7 +26,7 @@
                         <td>{{ getThingyEntries(userthingy.thingyID) }}</td>
                         <td> {{ returnStatus(userthingy) }} </td>
                         <td>
-                            <i style="cursor: pointer; padding-right:5px;" [routerLink]="['/charts']" class="fa fa-eye" aria-hidden="true"></i>
+                            <i style="cursor: pointer; padding-right:5px;" [routerLink]="['/sensordata']" class="fa fa-eye" aria-hidden="true"></i>
                             <i *ngIf="userthingy.packageArrivedMessageSent" style="cursor: pointer;" (click)="onDeleteUserthingy(userthingy.thingyID)" class="fa fa-ban"></i>
                             <button (click)="onDeleteUserthingy(userthingy.thingyID)"> force delete</button>
                         </td>
@@ -39,7 +39,7 @@
         <h3 *ngIf="userthingy.packageArrivedMessageSent">
             Your package of thingy <strong>{{userthingy.thingyID}}</strong> arrived! <br>
             Click <a [routerLink]="['/dashboard']" (click)="onDeleteUserthingy(userthingy.thingyID)">here</a> to delete it. <br>
-            Or go to <a [routerLink]="['/charts']">Sensordata Overview</a> to review your data. <br>
+            Or go to <a [routerLink]="['/sensordata']">Sensordata Overview</a> to review your data. <br>
             Remember that you pay for our service as long as you don't delete your thingy!
         </h3>
     </ng-container>
