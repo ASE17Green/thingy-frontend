@@ -64,6 +64,22 @@ export class ChartsComponent implements OnInit, OnChanges {
         '90': {color: 'red'}
     };
 
+    gaugePressThresholdConfig = {
+        '600': {color: 'red'},
+        '800': {color: 'orange'},
+        '900': {color: 'green'},
+        '1000': {color: 'orange'},
+        '1100': {color: 'red'}
+    };
+
+    gaugeEco2ThresholdConfig = {
+        '100': {color: 'red'},
+        '200': {color: 'orange'},
+        '300': {color: 'green'},
+        '600': {color: 'orange'},
+        '700': {color: 'red'}
+    };
+
     gaugeTempValue = 0;
     gaugeTempMinValue = 0;
     gaugeTempMaxValue = 100;

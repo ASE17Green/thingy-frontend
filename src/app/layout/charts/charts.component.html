@@ -134,10 +134,12 @@
                 <div class="card-block">
                     <ngx-gauge *ngIf="!showPresGraph"
                                [type]="gaugeDefType"
+                               [min] = "600"
+                               [max] = "1200"
                                [value]="gaugePressValue"
                                [label]="gaugePressLabel"
                                [append]="gaugePressAppendText"
-                               [thresholds]="gaugeDefThresholdConfig"
+                               [thresholds]="gaugePressThresholdConfig"
                                [duration]="1"
                                [thick]="10"
                                [size]="250">
@@ -198,10 +200,12 @@
                 <div class="card-block">
                     <ngx-gauge *ngIf="!showEco2Graph"
                                [type]="gaugeDefType"
+                               [min] = "100"
+                               [max] = "800"
                                [value]="gaugeEcoValue"
                                [label]="gaugeEcoLabel"
                                [append]="gaugeEcoAppendText"
-                               [thresholds]="gaugeDefThresholdConfig"
+                               [thresholds]="gaugeEco2ThresholdConfig"
                                [duration]="1"
                                [thick]="10"
                                [size]="250">;
