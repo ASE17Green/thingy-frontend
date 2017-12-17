@@ -28,7 +28,7 @@
                         <td>
                             <i style="cursor: pointer; padding-right:5px;" [routerLink]="['/sensordata']" class="fa fa-eye" aria-hidden="true"></i>
                             <i *ngIf="userthingy.packageArrivedMessageSent" style="cursor: pointer;" (click)="onDeleteUserthingy(userthingy.thingyID)" class="fa fa-ban"></i>
-                            <button (click)="onDeleteUserthingy(userthingy.thingyID)"> force delete</button>
+                            <i style="cursor: pointer; color: white" (click)="onDeleteUserthingy(userthingy.thingyID)" class="fa fa-lock"></i>
                         </td>
                     </tr>
                 </table>

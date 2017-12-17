@@ -95,12 +95,12 @@
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="!user.userThingys">
+                    <div *ngIf="user?.userThingys?.length == 0">
                         You currently don't own any thingys.
                     </div>
                 </div>
                 <!-- /.row -->
-                <div class="row">
+                <div class="row" *ngIf="user?.userThingys?.length > 0">
                     <div class="col-sm-1"></div>
                     <div class="col col-sm-10">
                         <div class="card mb-3">

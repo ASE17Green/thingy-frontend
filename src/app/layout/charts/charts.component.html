@@ -242,7 +242,8 @@
                     Acceleration
                 </div>
                 <div class="card-block">
-                    <canvas baseChart height="250"
+                    <canvas *ngIf="showAccelGraph"
+                            baseChart height="250"
                             [datasets]="accelChartData"
                             [labels]="lineChartLabels"
                             [options]="lineChartOptions"

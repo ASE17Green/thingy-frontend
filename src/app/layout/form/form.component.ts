@@ -61,7 +61,7 @@ export class FormComponent implements OnInit {
                 console.log('Something went wrong');
             }).then(
             () => {
-                if (this.user.userThingys && !this.userthingyA) {
+                if (this.user.userThingys && !this.userthingyA && this.user.userThingys.length > 0) {
                         this.userthingyService.getUserthingys().then(
                             (userthingys: Userthingy[]) => {
                                 this.userthingys = userthingys;

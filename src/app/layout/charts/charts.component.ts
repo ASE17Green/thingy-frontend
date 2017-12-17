@@ -29,6 +29,7 @@ export class ChartsComponent implements OnInit, OnChanges {
     showPresGraph = false;
     showHumGraph = false;
     showEco2Graph = false;
+    showAccelGraph = true;
 
     lastThingyDate: Date;
 
@@ -270,13 +271,16 @@ export class ChartsComponent implements OnInit, OnChanges {
         let hum = this.getKeyOfThingData(this.thingyData, 'humidity', this.graphPoints);
         let eco2 = this.getKeyOfThingData(this.thingyData, 'eco2', this.graphPoints);
 
+        let chartLabels = [];
+
         // format date for y axis
         for (let date of dates) {
             let formatDate = new Date(date);
-            this.lineChartLabels.push('' + formatDate.getHours()
+            chartLabels.push('' + formatDate.getHours()
                 + ':' + formatDate.getMinutes()
                 + ':' + formatDate.getSeconds());
         }
+        this.lineChartLabels = chartLabels;
 
         let accelData = [
             { data: accelX, label: 'Acceleration X' },
@@ -398,12 +402,10 @@ export class ChartsComponent implements OnInit, OnChanges {
             }
             this.thingyService.getThingyById(userthingyTemp).then(
                 (thingyData: ThingyData[]) => {
-                    console.log('before filter: ' + thingyData);
                     // filter empty date and position columns
                     thingyData = thingyData.filter(function(n){ return n.date != undefined });
                     thingyData = thingyData.filter(function(n){ return n.longitude != undefined });
                     thingyData = thingyData.filter(function(n){ return n.latitude != undefined });
-                    console.log('after filter: ' + thingyData);
                     this.thingyData = thingyData;
                 },
                 error => {
@@ -485,6 +487,7 @@ export class ChartsComponent implements OnInit, OnChanges {
                             thingyData = thingyData.filter(function(n){ return n.latitude != undefined });
                             this.thingyData = thingyData;
                             this.initThingyData();
+                            this.showAccelGraph = true;
                             this.snackbar.open('Request successful', 'close', this.config);
                         },
                         error => {
@@ -542,7 +545,14 @@ export class ChartsComponent implements OnInit, OnChanges {
     }
 
     changeUserthingy(userthingy: Userthingy) {
-        console.log('changed to: ' + userthingy.thingyID);
+        // graphs won't lazy-load
+        this.showGraphs = false;
+        this.showTempGraph = false;
+        this.showPresGraph = false;
+        this.showHumGraph = false;
+        this.showEco2Graph = false;
+        this.showAccelGraph = false;
+
         this.userthingy = userthingy;
         this.userthingyA = userthingy;
         this.getAllData();
