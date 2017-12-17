@@ -194,8 +194,6 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.lngMap = this.lastThingy.longitude;
         this.latMarker = this.lastThingy.latitude;
         this.lngMarker = this.lastThingy.longitude;
-        console.log(this.latMarker);
-        console.log(this.lngMarker);
 
         // gauges
         this.gaugeTempValue = this.lastThingy.temperature;
@@ -433,7 +431,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             }
         ).then(
             () => {
-                if( this.user.userThingys){
+                if(this.user.userThingys) {
                     this.userthingyService.getUserthingyById(this.user.userThingys[0]).then(
                         (userThingy: Userthingy) => {
                             this.userthingy = userThingy;

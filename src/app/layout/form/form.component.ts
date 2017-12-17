@@ -18,6 +18,7 @@ export class FormComponent implements OnInit {
     user: User = new User();
     userthingyForm: FormGroup;
     userthingys: Userthingy[];
+    userthingyA: Userthingy;
 
     public searchControl: FormControl;
 
@@ -47,30 +48,6 @@ export class FormComponent implements OnInit {
     ngOnInit() {
         this.searchControl = new FormControl();
 
-        //this.setCurrentPosition();
-
-        this.mapsAPILoader.load().then(() => {
-            let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
-                types: ['address']
-            });
-            autocomplete.addListener('place_changed', () => {
-                this.ngZone.run(() => {
-                    //get the place result
-                    let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-
-                    //verify result
-                    if (place.geometry === undefined || place.geometry === null) {
-                        return;
-                    }
-
-                    //set latitude, longitude and zoom
-                    this.userthingys[0].endLatitude = this.latMap = this.latMarker = place.geometry.location.lat();
-                    this.userthingys[0].endLongitude = this.lngMap = this.lngMarker = place.geometry.location.lng();
-                });
-            });
-        });
-
-
         this.userService.getUser().then(
             (userData: User) => {
                 this.user = userData;
@@ -79,22 +56,20 @@ export class FormComponent implements OnInit {
                 console.log('Something went wrong');
             }).then(
             () => {
-                if (this.user.userThingys) {
-                    for (let thingysID of this.user.userThingys) {
-                        this.userthingyService.getUserthingyById(thingysID).then(
-                            (userthingy: Userthingy) => {
-                                if (this.userthingys) {
-                                    this.userthingys.push(userthingy);
-                                } else {
-                                    this.userthingys = [userthingy];
-                                }
-                                this.latMap = this.latMarker = userthingy.endLatitude;
-                                this.lngMap = this.lngMarker = userthingy.endLongitude;
+                if (this.user.userThingys && !this.userthingyA) {
+                        this.userthingyService.getUserthingys().then(
+                            (userthingys: Userthingy[]) => {
+                                this.userthingys = userthingys;
+                                this.latMap = this.latMarker = userthingys[0].endLatitude;
+                                this.lngMap = this.lngMarker = userthingys[0].endLongitude;
+                                this.userthingyA = userthingys[0];
                             },
                             error => {
                                 console.log('Something went wrong');
                             });
-                    }
+                } else if (this.user.userThingys && this.userthingyA) {
+                    this.latMap = this.latMarker = this.userthingyA.endLatitude;
+                    this.lngMap = this.lngMarker = this.userthingyA.endLongitude;
                 }
             }
         );
@@ -110,22 +85,24 @@ export class FormComponent implements OnInit {
     }
 
     onSetIntervals() {
-        for (let userthingy of this.userthingys) {
-            this.userthingyService.updateUserthingy(userthingy).then(
-                data => {
-                    const jsonData = JSON.parse(JSON.stringify(data));
-                    if (jsonData.success === undefined) {
-                        this.snackbar.open('Thingy successfully updated', 'close', this.config);
-                    } else {
-                        this.snackbar.open(jsonData.msg, 'close', this.config);
-                    }
-                },
-                error => {
-                    this.snackbar.open('Something went wrong. Please contact an admin', 'close', this.config);
-                    this.router.navigate(['/login']);
-                });
-        }
+        this.userthingyService.updateUserthingy(this.userthingyA).then(
+            data => {
+                const jsonData = JSON.parse(JSON.stringify(data));
+                if (jsonData.success === undefined) {
+                    this.snackbar.open('Thingy successfully updated', 'close', this.config);
+                } else {
+                    this.snackbar.open(jsonData.msg, 'close', this.config);
+                }
+            },
+            error => {
+                this.snackbar.open('Something went wrong. Please contact an admin', 'close', this.config);
+                this.router.navigate(['/login']);
+            });
 
 
+    }
+    changeUserthingy(userthingy: Userthingy) {
+        this.userthingyA = userthingy;
+        this.ngOnInit();
     }
 }
