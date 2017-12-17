@@ -113,6 +113,13 @@
                             </div>
                             <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="15">
                                 <agm-marker [latitude]="latMarker" [longitude]="lngMarker"></agm-marker>
+                                <agm-polyline [strokeColor]="'Red'">
+                                    <agm-polyline-point [latitude]="dest_lat1" [longitude]="dest_lng1"></agm-polyline-point>
+                                    <agm-polyline-point [latitude]="dest_lat1" [longitude]="dest_lng2"></agm-polyline-point>
+                                    <agm-polyline-point [latitude]="dest_lat2" [longitude]="dest_lng2"></agm-polyline-point>
+                                    <agm-polyline-point [latitude]="dest_lat2" [longitude]="dest_lng1"></agm-polyline-point>
+                                    <agm-polyline-point [latitude]="dest_lat1" [longitude]="dest_lng1"></agm-polyline-point>
+                                </agm-polyline>
                             </agm-map>
                         </div>
                     </div>

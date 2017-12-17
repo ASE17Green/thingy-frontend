@@ -19,7 +19,9 @@ export class ChartsComponent implements OnInit, OnChanges {
     user: User;
     thingyData: ThingyData[];
     lastThingy: ThingyData;
+    userthingys: Userthingy[];
     userthingy: Userthingy;
+    userthingyA: Userthingy;
 
     graphPoints = 60;
     showGraphs = false;
@@ -222,11 +224,14 @@ export class ChartsComponent implements OnInit, OnChanges {
             let maxTemp = this.userthingy.thingyMaxTemperature;
             this.gaugeTempMinValue = minTemp - 10;
             this.gaugeTempMaxValue = maxTemp + 10;
-            this.gaugeTempThresholdConfig[minTemp - 10] = {color: 'red'};
-            this.gaugeTempThresholdConfig[minTemp] = {color: 'orange'};
-            this.gaugeTempThresholdConfig[minTemp + 5] = {color: 'green'};
-            this.gaugeTempThresholdConfig[maxTemp - 5] = {color: 'orange'};
-            this.gaugeTempThresholdConfig[maxTemp] = {color: 'red'};
+            let gaugeTempThreshold = {};
+
+            gaugeTempThreshold[minTemp - 10] = {color: 'red'};
+            gaugeTempThreshold[minTemp] = {color: 'orange'};
+            gaugeTempThreshold[minTemp + 5] = {color: 'green'};
+            gaugeTempThreshold[maxTemp - 5] = {color: 'orange'};
+            gaugeTempThreshold[maxTemp] = {color: 'red'};
+            this.gaugeTempThresholdConfig = gaugeTempThreshold;
 
             let coef = 0.000089;
             this.dest_lng1 = this.userthingy.endLongitude - coef * 2;
@@ -369,18 +374,27 @@ export class ChartsComponent implements OnInit, OnChanges {
 
     refreshData(): void {
         if (this.user && this.user.userThingys) {
-            this.thingyService.getThingyById(this.user.userThingys[0]).then(
+            let userthingyTemp;
+            if (this.userthingyA) {
+                userthingyTemp = this.userthingyA.thingyID;
+            } else {
+                userthingyTemp = this.user.userThingys[0];
+            }
+            this.thingyService.getThingyById(userthingyTemp).then(
                 (thingyData: ThingyData[]) => {
+                    console.log('before filter: ' + thingyData);
+                    // filter empty date and position columns
+                    thingyData = thingyData.filter(function(n){ return n.date != undefined });
+                    thingyData = thingyData.filter(function(n){ return n.longitude != undefined });
+                    thingyData = thingyData.filter(function(n){ return n.latitude != undefined });
+                    console.log('after filter: ' + thingyData);
                     this.thingyData = thingyData;
-                    // filter empty date columns
-                    this.thingyData = this.thingyData.filter(function(n){ return n.date != undefined });
-                    //this.snackbar.open('Request successful', 'close', this.config);
                 },
                 error => {
                     this.snackbar.open('No thingy data available.', 'close', this.config);
                 }).then(
                 () => {
-                    this.thingyService.getLastEntry(this.user.userThingys[0]).then(
+                    this.thingyService.getLastEntry(userthingyTemp).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
                             this.refreshGraphs();
@@ -402,12 +416,26 @@ export class ChartsComponent implements OnInit, OnChanges {
                 console.log('Something went wrong');
             }).then(
             () => {
-                if (this.user.userThingys) {
+                if (this.user.userThingys && !this.userthingyA) {
                     this.thingyService.getLastEntry(this.user.userThingys[0]).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
-                            this.lastThingyDate = this.lastThingy.date;
-                            this.initLastThingyData();
+                            if(this.lastThingy){
+                                this.lastThingyDate = this.lastThingy.date;
+                                this.initLastThingyData();
+                            }
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                        });
+                } else if (this.user.userThingys && this.userthingyA) {
+                    this.thingyService.getLastEntry(this.userthingyA.thingyID).then(
+                        (thingyData: ThingyData) => {
+                            this.lastThingy = thingyData;
+                            if(this.lastThingy){
+                                this.lastThingyDate = this.lastThingy.date;
+                                this.initLastThingyData();
+                            }
                         },
                         error => {
                             console.log('Something went wrong');
@@ -416,9 +444,29 @@ export class ChartsComponent implements OnInit, OnChanges {
             }
         ).then(
             () => {
-                if (this.user.userThingys) {
+                if (this.user.userThingys && !this.userthingyA) {
                     this.thingyService.getThingyById(this.user.userThingys[0]).then(
                         (thingyData: ThingyData[]) => {
+                            // filter empty date and position columns
+                            thingyData = thingyData.filter(function(n){ return n.date != undefined });
+                            thingyData = thingyData.filter(function(n){ return n.longitude != undefined });
+                            thingyData = thingyData.filter(function(n){ return n.latitude != undefined });
+                            this.thingyData = thingyData;
+                            this.thingyData = thingyData;
+                            this.initThingyData();
+                            this.snackbar.open('Request successful', 'close', this.config);
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                            this.snackbar.open('No thingy data available.', 'close', this.config);
+                        });
+                } else if(this.user.userThingys && this.userthingyA) {
+                    this.thingyService.getThingyById(this.userthingyA.thingyID).then(
+                        (thingyData: ThingyData[]) => {
+                            // filter empty date and position columns
+                            thingyData = thingyData.filter(function(n){ return n.date != undefined });
+                            thingyData = thingyData.filter(function(n){ return n.longitude != undefined });
+                            thingyData = thingyData.filter(function(n){ return n.latitude != undefined });
                             this.thingyData = thingyData;
                             this.initThingyData();
                             this.snackbar.open('Request successful', 'close', this.config);
@@ -431,16 +479,29 @@ export class ChartsComponent implements OnInit, OnChanges {
             }
         ).then(
             () => {
-                if(this.user.userThingys) {
+                if(this.user.userThingys && !this.userthingyA) {
                     this.userthingyService.getUserthingyById(this.user.userThingys[0]).then(
                         (userThingy: Userthingy) => {
                             this.userthingy = userThingy;
+                            this.userthingyA = this.userthingy;
                             this.initUserthingyData();
                             this.refreshGraphs();
                         },
                         error => {
                             this.snackbar.open('Couldnt load userthingy');
-                        })
+                        });
+                    this.userthingyService.getUserthingys().then(
+                        (userThingys: Userthingy[]) => {
+                            this.userthingys = userThingys;
+                        },
+                        error => {
+                            this.snackbar.open('Couldnt load userthingy');
+                        }
+                    )
+                } else if(this.user.userThingys && this.userthingyA) {
+                    this.userthingy = this.userthingyA;
+                    this.initUserthingyData();
+                    this.refreshGraphs();
                 }
             }
         );
@@ -462,6 +523,13 @@ export class ChartsComponent implements OnInit, OnChanges {
 
     getKeyOfThingData(array: ThingyData[], key: string, elements: number) {
         return array.map(function(item) { return item[key]; }).splice(-elements);
+    }
+
+    changeUserthingy(userthingy: Userthingy) {
+        console.log('changed to: ' + userthingy.thingyID);
+        this.userthingy = userthingy;
+        this.userthingyA = userthingy;
+        this.getAllData();
     }
 
 }

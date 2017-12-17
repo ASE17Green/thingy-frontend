@@ -1,6 +1,21 @@
 <div [@routerTransition]>
     <app-page-header [heading]="'Sensordata Overview'" [icon]="'fa-bar-chart'"></app-page-header>
     <div class="row">
+        <ng-container *ngIf="userthingy">
+            <ng-container *ngFor="let userthingytemp of userthingys">
+                <button style="width:160px; margin-left:7px;" class="btn"
+                        [ngClass]="{
+                                    'btn-primary':userthingyA.thingyID === userthingytemp.thingyID
+                                  }"
+                        (click)="changeUserthingy(userthingytemp)">{{userthingytemp.thingyID}}</button>
+            </ng-container>
+        </ng-container>
+    </div>
+    <div class="row">
+        <div style="height:15px;"></div>
+    </div>
+    <ng-container *ngIf="lastThingy">
+    <div class="row">
         <div class="col col-sm-12">
             <div class="card mb-3">
                 <div class="card-header">
@@ -245,7 +260,7 @@
                     Current Location and path
                 </div>
                 <div class="card-block">
-                    <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12">
+                    <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="15">
                         <agm-marker [latitude]="latMarker" [longitude]="lngMarker" [title]="'Current Position'"></agm-marker>
                         <agm-marker [latitude]="userthingy?.endLatitude" [longitude]="userthingy?.endLongitude" [title]="'Destination'"></agm-marker>
                         <agm-polyline>
@@ -264,5 +279,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    </ng-container>
+    <div *ngIf="!lastThingy">
+        There seems to be no data available
     </div>
 </div>

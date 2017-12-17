@@ -20,6 +20,11 @@ export class FormComponent implements OnInit {
     userthingys: Userthingy[];
     userthingyA: Userthingy;
 
+    dest_lat1 = 0;
+    dest_lat2 = 0;
+    dest_lng1 = 0;
+    dest_lng2 = 0;
+
     public searchControl: FormControl;
 
     @ViewChild('search')
@@ -62,6 +67,11 @@ export class FormComponent implements OnInit {
                                 this.userthingys = userthingys;
                                 this.latMap = this.latMarker = userthingys[0].endLatitude;
                                 this.lngMap = this.lngMarker = userthingys[0].endLongitude;
+                                let coef = 0.000089;
+                                this.dest_lng1 = this.userthingys[0].endLongitude - coef * 2;
+                                this.dest_lng2 = this.userthingys[0].endLongitude + coef * 2;
+                                this.dest_lat1 = this.userthingys[0].endLatitude + coef / Math.cos(this.userthingys[0].endLatitude * 0.018);
+                                this.dest_lat2 = this.userthingys[0].endLatitude - coef / Math.cos(this.userthingys[0].endLatitude * 0.018);
                                 this.userthingyA = userthingys[0];
                             },
                             error => {
@@ -70,6 +80,11 @@ export class FormComponent implements OnInit {
                 } else if (this.user.userThingys && this.userthingyA) {
                     this.latMap = this.latMarker = this.userthingyA.endLatitude;
                     this.lngMap = this.lngMarker = this.userthingyA.endLongitude;
+                    let coef = 0.000089;
+                    this.dest_lng1 = this.userthingyA.endLongitude - coef * 2;
+                    this.dest_lng2 = this.userthingyA.endLongitude + coef * 2;
+                    this.dest_lat1 = this.userthingyA.endLatitude + coef / Math.cos(this.userthingyA.endLatitude * 0.018);
+                    this.dest_lat2 = this.userthingyA.endLatitude - coef / Math.cos(this.userthingyA.endLatitude * 0.018);
                 }
             }
         );
