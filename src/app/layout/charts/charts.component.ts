@@ -19,7 +19,12 @@ export class ChartsComponent implements OnInit, OnChanges {
     user: User;
     thingyData: ThingyData[];
     lastThingy: ThingyData;
+    userthingys: Userthingy[];
     userthingy: Userthingy;
+    userthingyA: Userthingy;
+
+    arrivedMsgSent = false;
+    tempMsgSent = false;
 
     graphPoints = 60;
     showGraphs = false;
@@ -27,6 +32,7 @@ export class ChartsComponent implements OnInit, OnChanges {
     showPresGraph = false;
     showHumGraph = false;
     showEco2Graph = false;
+    showAccelGraph = true;
 
     lastThingyDate: Date;
 
@@ -60,6 +66,22 @@ export class ChartsComponent implements OnInit, OnChanges {
         '20': {color: 'green'},
         '80': {color: 'orange'},
         '90': {color: 'red'}
+    };
+
+    gaugePressThresholdConfig = {
+        '600': {color: 'red'},
+        '800': {color: 'orange'},
+        '900': {color: 'green'},
+        '1000': {color: 'orange'},
+        '1100': {color: 'red'}
+    };
+
+    gaugeEco2ThresholdConfig = {
+        '100': {color: 'red'},
+        '200': {color: 'orange'},
+        '300': {color: 'green'},
+        '600': {color: 'orange'},
+        '700': {color: 'red'}
     };
 
     gaugeTempValue = 0;
@@ -194,8 +216,6 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.lngMap = this.lastThingy.longitude;
         this.latMarker = this.lastThingy.latitude;
         this.lngMarker = this.lastThingy.longitude;
-        console.log(this.latMarker);
-        console.log(this.lngMarker);
 
         // gauges
         this.gaugeTempValue = this.lastThingy.temperature;
@@ -224,11 +244,14 @@ export class ChartsComponent implements OnInit, OnChanges {
             let maxTemp = this.userthingy.thingyMaxTemperature;
             this.gaugeTempMinValue = minTemp - 10;
             this.gaugeTempMaxValue = maxTemp + 10;
-            this.gaugeTempThresholdConfig[minTemp - 10] = {color: 'red'};
-            this.gaugeTempThresholdConfig[minTemp] = {color: 'orange'};
-            this.gaugeTempThresholdConfig[minTemp + 5] = {color: 'green'};
-            this.gaugeTempThresholdConfig[maxTemp - 5] = {color: 'orange'};
-            this.gaugeTempThresholdConfig[maxTemp] = {color: 'red'};
+            let gaugeTempThreshold = {};
+
+            gaugeTempThreshold[minTemp - 10] = {color: 'red'};
+            gaugeTempThreshold[minTemp] = {color: 'orange'};
+            gaugeTempThreshold[minTemp + 5] = {color: 'green'};
+            gaugeTempThreshold[maxTemp - 5] = {color: 'orange'};
+            gaugeTempThreshold[maxTemp] = {color: 'red'};
+            this.gaugeTempThresholdConfig = gaugeTempThreshold;
 
             let coef = 0.000089;
             this.dest_lng1 = this.userthingy.endLongitude - coef * 2;
@@ -251,13 +274,16 @@ export class ChartsComponent implements OnInit, OnChanges {
         let hum = this.getKeyOfThingData(this.thingyData, 'humidity', this.graphPoints);
         let eco2 = this.getKeyOfThingData(this.thingyData, 'eco2', this.graphPoints);
 
+        let chartLabels = [];
+
         // format date for y axis
         for (let date of dates) {
             let formatDate = new Date(date);
-            this.lineChartLabels.push('' + formatDate.getHours()
+            chartLabels.push('' + formatDate.getHours()
                 + ':' + formatDate.getMinutes()
                 + ':' + formatDate.getSeconds());
         }
+        this.lineChartLabels = chartLabels;
 
         let accelData = [
             { data: accelX, label: 'Acceleration X' },
@@ -371,21 +397,44 @@ export class ChartsComponent implements OnInit, OnChanges {
 
     refreshData(): void {
         if (this.user && this.user.userThingys) {
-            this.thingyService.getThingyById(this.user.userThingys[0]).then(
+            let userthingyTemp;
+            if (this.userthingyA) {
+                userthingyTemp = this.userthingyA.thingyID;
+            } else {
+                userthingyTemp = this.user.userThingys[0];
+            }
+            this.thingyService.getThingyById(userthingyTemp).then(
                 (thingyData: ThingyData[]) => {
+                    // filter empty date and position columns
+                    thingyData = thingyData.filter(function(n){ return n.date != undefined });
+                    thingyData = thingyData.filter(function(n){ return n.longitude != undefined });
+                    thingyData = thingyData.filter(function(n){ return n.latitude != undefined });
                     this.thingyData = thingyData;
-                    // filter empty date columns
-                    this.thingyData = this.thingyData.filter(function(n){ return n.date != undefined });
-                    //this.snackbar.open('Request successful', 'close', this.config);
                 },
                 error => {
                     this.snackbar.open('No thingy data available.', 'close', this.config);
                 }).then(
                 () => {
-                    this.thingyService.getLastEntry(this.user.userThingys[0]).then(
+                    this.thingyService.getLastEntry(userthingyTemp).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
                             this.refreshGraphs();
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                        });
+                }
+            ).then(
+                () => {
+                    this.userthingyService.getUserthingyById(userthingyTemp).then(
+                        (uThingy: Userthingy) => {
+                            if(uThingy.packageArrivedMessageSent && !this.arrivedMsgSent){
+                                this.snackbar.open('Your package arrived!', 'close', this.config);
+                                this.arrivedMsgSent = true;
+                            } else if(uThingy.thingyTemperatureMessageSent && !this.tempMsgSent) {
+                                this.snackbar.open('Your package reached a critical temperature!', 'close', this.config);
+                                this.tempMsgSent = true;
+                            }
                         },
                         error => {
                             console.log('Something went wrong');
@@ -404,12 +453,26 @@ export class ChartsComponent implements OnInit, OnChanges {
                 console.log('Something went wrong');
             }).then(
             () => {
-                if (this.user.userThingys) {
+                if (this.user.userThingys && !this.userthingyA) {
                     this.thingyService.getLastEntry(this.user.userThingys[0]).then(
                         (thingyData: ThingyData) => {
                             this.lastThingy = thingyData;
-                            this.lastThingyDate = this.lastThingy.date;
-                            this.initLastThingyData();
+                            if(this.lastThingy){
+                                this.lastThingyDate = this.lastThingy.date;
+                                this.initLastThingyData();
+                            }
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                        });
+                } else if (this.user.userThingys && this.userthingyA) {
+                    this.thingyService.getLastEntry(this.userthingyA.thingyID).then(
+                        (thingyData: ThingyData) => {
+                            this.lastThingy = thingyData;
+                            if(this.lastThingy){
+                                this.lastThingyDate = this.lastThingy.date;
+                                this.initLastThingyData();
+                            }
                         },
                         error => {
                             console.log('Something went wrong');
@@ -418,12 +481,33 @@ export class ChartsComponent implements OnInit, OnChanges {
             }
         ).then(
             () => {
-                if (this.user.userThingys) {
+                if (this.user.userThingys && !this.userthingyA) {
                     this.thingyService.getThingyById(this.user.userThingys[0]).then(
                         (thingyData: ThingyData[]) => {
+                            // filter empty date and position columns
+                            thingyData = thingyData.filter(function(n){ return n.date != undefined });
+                            thingyData = thingyData.filter(function(n){ return n.longitude != undefined });
+                            thingyData = thingyData.filter(function(n){ return n.latitude != undefined });
+                            this.thingyData = thingyData;
                             this.thingyData = thingyData;
                             this.initThingyData();
-                            this.snackbar.open('Request successful', 'close', this.config);
+                            //this.snackbar.open('Request successful', 'close', this.config);
+                        },
+                        error => {
+                            console.log('Something went wrong');
+                            this.snackbar.open('No thingy data available.', 'close', this.config);
+                        });
+                } else if(this.user.userThingys && this.userthingyA) {
+                    this.thingyService.getThingyById(this.userthingyA.thingyID).then(
+                        (thingyData: ThingyData[]) => {
+                            // filter empty date and position columns
+                            thingyData = thingyData.filter(function(n){ return n.date != undefined });
+                            thingyData = thingyData.filter(function(n){ return n.longitude != undefined });
+                            thingyData = thingyData.filter(function(n){ return n.latitude != undefined });
+                            this.thingyData = thingyData;
+                            this.initThingyData();
+                            this.showAccelGraph = true;
+                            //this.snackbar.open('Request successful', 'close', this.config);
                         },
                         error => {
                             console.log('Something went wrong');
@@ -433,16 +517,29 @@ export class ChartsComponent implements OnInit, OnChanges {
             }
         ).then(
             () => {
-                if( this.user.userThingys){
+                if(this.user.userThingys && !this.userthingyA) {
                     this.userthingyService.getUserthingyById(this.user.userThingys[0]).then(
                         (userThingy: Userthingy) => {
                             this.userthingy = userThingy;
+                            this.userthingyA = this.userthingy;
                             this.initUserthingyData();
                             this.refreshGraphs();
                         },
                         error => {
                             this.snackbar.open('Couldnt load userthingy');
-                        })
+                        });
+                    this.userthingyService.getUserthingys().then(
+                        (userThingys: Userthingy[]) => {
+                            this.userthingys = userThingys;
+                        },
+                        error => {
+                            this.snackbar.open('Couldnt load userthingy');
+                        }
+                    )
+                } else if(this.user.userThingys && this.userthingyA) {
+                    this.userthingy = this.userthingyA;
+                    this.initUserthingyData();
+                    this.refreshGraphs();
                 }
             }
         );
@@ -464,6 +561,23 @@ export class ChartsComponent implements OnInit, OnChanges {
 
     getKeyOfThingData(array: ThingyData[], key: string, elements: number) {
         return array.map(function(item) { return item[key]; }).splice(-elements);
+    }
+
+    changeUserthingy(userthingy: Userthingy) {
+        // graphs won't lazy-load
+        this.showGraphs = false;
+        this.showTempGraph = false;
+        this.showPresGraph = false;
+        this.showHumGraph = false;
+        this.showEco2Graph = false;
+        this.showAccelGraph = false;
+
+        this.arrivedMsgSent = false;
+        this.tempMsgSent = false;
+
+        this.userthingy = userthingy;
+        this.userthingyA = userthingy;
+        this.getAllData();
     }
 
 }

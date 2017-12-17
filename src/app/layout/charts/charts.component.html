@@ -1,6 +1,21 @@
 <div [@routerTransition]>
     <app-page-header [heading]="'Sensordata Overview'" [icon]="'fa-bar-chart'"></app-page-header>
     <div class="row">
+        <ng-container *ngIf="userthingy">
+            <ng-container *ngFor="let userthingytemp of userthingys">
+                <button style="width:160px; margin-left:7px;" class="btn"
+                        [ngClass]="{
+                                    'btn-primary':userthingyA.thingyID === userthingytemp.thingyID
+                                  }"
+                        (click)="changeUserthingy(userthingytemp)">{{userthingytemp.thingyID}}</button>
+            </ng-container>
+        </ng-container>
+    </div>
+    <div class="row">
+        <div style="height:15px;"></div>
+    </div>
+    <ng-container *ngIf="lastThingy">
+    <div class="row">
         <div class="col col-sm-12">
             <div class="card mb-3">
                 <div class="card-header">
@@ -74,6 +89,16 @@
 
 
     <div class="row">
+        <div class="col-sm-7"></div>
+        <div class="col-sm-3" style="text-align: right">Initial datapoints</div>
+        <div class="col-sm-2">
+            <input type="number" style="width:40px;" class="input-underline input-sm" placeholder="-" [(ngModel)]="graphPoints">
+            <button (click)="changeUserthingy(userthingy)">Set</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div style="height:10px;"></div>
     </div>
 
     <div class="row">
@@ -119,10 +144,12 @@
                 <div class="card-block">
                     <ngx-gauge *ngIf="!showPresGraph"
                                [type]="gaugeDefType"
+                               [min] = "600"
+                               [max] = "1200"
                                [value]="gaugePressValue"
                                [label]="gaugePressLabel"
                                [append]="gaugePressAppendText"
-                               [thresholds]="gaugeDefThresholdConfig"
+                               [thresholds]="gaugePressThresholdConfig"
                                [duration]="1"
                                [thick]="10"
                                [size]="250">
@@ -183,10 +210,12 @@
                 <div class="card-block">
                     <ngx-gauge *ngIf="!showEco2Graph"
                                [type]="gaugeDefType"
+                               [min] = "100"
+                               [max] = "800"
                                [value]="gaugeEcoValue"
                                [label]="gaugeEcoLabel"
                                [append]="gaugeEcoAppendText"
-                               [thresholds]="gaugeDefThresholdConfig"
+                               [thresholds]="gaugeEco2ThresholdConfig"
                                [duration]="1"
                                [thick]="10"
                                [size]="250">;
@@ -223,7 +252,8 @@
                     Acceleration
                 </div>
                 <div class="card-block">
-                    <canvas baseChart height="250"
+                    <canvas *ngIf="showAccelGraph"
+                            baseChart height="250"
                             [datasets]="accelChartData"
                             [labels]="lineChartLabels"
                             [options]="lineChartOptions"
@@ -245,7 +275,7 @@
                     Current Location and path
                 </div>
                 <div class="card-block">
-                    <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12">
+                    <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="15">
                         <agm-marker [latitude]="latMarker" [longitude]="lngMarker" [title]="'Current Position'"></agm-marker>
                         <agm-marker [latitude]="userthingy?.endLatitude" [longitude]="userthingy?.endLongitude" [title]="'Destination'"></agm-marker>
                         <agm-polyline>
@@ -264,5 +294,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    </ng-container>
+    <div *ngIf="!lastThingy">
+        There seems to be no data available
     </div>
 </div>

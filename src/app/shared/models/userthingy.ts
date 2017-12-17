@@ -11,4 +11,5 @@ export class Userthingy {
 
     thingyTemperatureMessageSent: boolean;
     packageArrivedMessageSent: boolean;
+    packageStartedMessageSent: boolean;
 }

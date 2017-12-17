@@ -1,11 +1,23 @@
 <div [@routerTransition]>
     <app-page-header [heading]="'Set Intervals'" [icon]="'fa-sliders'"></app-page-header>
+    <div class="row">
+        <ng-container *ngFor="let userthingy of userthingys">
+            <button style="width:160px; margin-left:7px;" class="btn"
+                    [ngClass]="{
+                                'btn-primary':userthingyA === userthingy
+                              }"
+                    (click)="changeUserthingy(userthingy)">{{userthingy.thingyID}}</button>
+        </ng-container>
+    </div>
+    <div class="row">
+        <div style="height:15px;"></div>
+    </div>
     <form [formGroup]="userthingyForm">
         <div class="form-content">
             <div class="form-group">
                 <div class="row">
                     <div class="col-sm-2"></div>
-                    <div class="col col-sm-8" *ngFor="let userthingy of userthingys">
+                    <div class="col col-sm-8" *ngIf="userthingyA">
                         <div class="card mb-3">
                             <div class="card-header">
                                 Interval overview
@@ -21,8 +33,8 @@
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
-                                        <input type="number" class="form-control input-underline input-lg" formControlName="thingyMinTemperature" [max]="userthingy.thingyMaxTemperature - 1"
-                                               id="thingyMinTemperature" placeholder="Set new Temperature" [(ngModel)]="userthingy.thingyMinTemperature" required>
+                                        <input type="number" class="form-control input-underline input-lg" formControlName="thingyMinTemperature" [max]="userthingyA.thingyMaxTemperature - 1"
+                                               id="thingyMinTemperature" placeholder="Set new Temperature" [(ngModel)]="userthingyA.thingyMinTemperature" required>
                                         </div>
                                         <div class="col-sm-2">
                                             <div style="margin-top: 5px;">
@@ -39,8 +51,8 @@
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
-                                            <input type="number" class="form-control input-underline input-lg" formControlName="thingyMaxTemperature" [min]="userthingy.thingyMinTemperature + 1"
-                                                   id="thingyMaxTemperature" placeholder="Set new Temperature" [(ngModel)]="userthingy.thingyMaxTemperature" required>
+                                            <input type="number" class="form-control input-underline input-lg" formControlName="thingyMaxTemperature" [min]="userthingyA.thingyMinTemperature + 1"
+                                                   id="thingyMaxTemperature" placeholder="Set new Temperature" [(ngModel)]="userthingyA.thingyMaxTemperature" required>
                                         </div>
                                         <div class="col-sm-2">
                                             <div style="margin-top: 5px;">
@@ -58,7 +70,7 @@
                                         </div>
                                         <div class="col-sm-3">
                                             <input type="number" class="form-control input-underline input-lg" formControlName="endLatitude" disabled
-                                                   id="endLatitude" placeholder="-" [(ngModel)]="userthingy.endLatitude" required>
+                                                   id="endLatitude" placeholder="-" [(ngModel)]="userthingyA.endLatitude" required>
                                         </div>
                                     </div>
                                     <div style="height:5px;"></div>
@@ -71,7 +83,7 @@
                                         </div>
                                         <div class="col-sm-3">
                                             <input type="text" class="form-control input-underline input-lg" formControlName="endLongitude" disabled
-                                                   id="endLongitude" placeholder="-" [(ngModel)]="userthingy.endLongitude" required>
+                                                   id="endLongitude" placeholder="-" [(ngModel)]="userthingyA.endLongitude" required>
                                         </div>
                                     </div>
                                 </div>
@@ -83,30 +95,31 @@
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="!user.userThingys">
+                    <div *ngIf="user?.userThingys?.length == 0">
                         You currently don't own any thingys.
                     </div>
                 </div>
                 <!-- /.row -->
-                <div class="row">
+                <div class="row" *ngIf="user?.userThingys?.length > 0">
                     <div class="col-sm-1"></div>
                     <div class="col col-sm-10">
                         <div class="card mb-3">
                             <div class="card-header">
                                 <div class="row" style="height:30px">
                                     <div class="col-sm-6">
-                                        Select new delivery address
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="form-group pull-right" style="margin-top:-5px;">
-                                            <input placeholder="search for location" autocorrect="off" autocapitalize="off"
-                                                   spellcheck="off" type="text" class="form-control" #search [formControl]="searchControl">
-                                        </div>
+                                        Destination
                                     </div>
                                 </div>
                             </div>
-                            <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12" (mapClick)="placeMarker($event)">
+                            <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="15">
                                 <agm-marker [latitude]="latMarker" [longitude]="lngMarker"></agm-marker>
+                                <agm-polyline [strokeColor]="'Red'">
+                                    <agm-polyline-point [latitude]="dest_lat1" [longitude]="dest_lng1"></agm-polyline-point>
+                                    <agm-polyline-point [latitude]="dest_lat1" [longitude]="dest_lng2"></agm-polyline-point>
+                                    <agm-polyline-point [latitude]="dest_lat2" [longitude]="dest_lng2"></agm-polyline-point>
+                                    <agm-polyline-point [latitude]="dest_lat2" [longitude]="dest_lng1"></agm-polyline-point>
+                                    <agm-polyline-point [latitude]="dest_lat1" [longitude]="dest_lng1"></agm-polyline-point>
+                                </agm-polyline>
                             </agm-map>
                         </div>
                     </div>
