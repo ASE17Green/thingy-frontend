@@ -24,6 +24,7 @@ export class FormComponent implements OnInit {
     @ViewChild('search')
     public searchElementRef: ElementRef;
 
+    maps = [];
     latMap: number = 46.9480;
     lngMap: number = 7.4474;
     latMarker: number = 46.9480;
@@ -126,19 +127,5 @@ export class FormComponent implements OnInit {
         }
 
 
-    }
-
-    placeMarker($event) {
-        this.userthingys[0].endLatitude = this.latMarker = $event.coords.lat;
-        this.userthingys[0].endLongitude = this.lngMarker = $event.coords.lng;
-    }
-
-    private setCurrentPosition() {
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                this.latMap = this.latMarker = position.coords.latitude;
-                this.lngMap = this.lngMarker = position.coords.longitude;
-            });
-        }
     }
 }

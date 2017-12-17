@@ -95,17 +95,11 @@
                             <div class="card-header">
                                 <div class="row" style="height:30px">
                                     <div class="col-sm-6">
-                                        Select new delivery address
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="form-group pull-right" style="margin-top:-5px;">
-                                            <input placeholder="search for location" autocorrect="off" autocapitalize="off"
-                                                   spellcheck="off" type="text" class="form-control" #search [formControl]="searchControl">
-                                        </div>
+                                        Destination
                                     </div>
                                 </div>
                             </div>
-                            <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12" (mapClick)="placeMarker($event)">
+                            <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="12">
                                 <agm-marker [latitude]="latMarker" [longitude]="lngMarker"></agm-marker>
                             </agm-map>
                         </div>
