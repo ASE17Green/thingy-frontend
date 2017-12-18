@@ -57,6 +57,7 @@
                                 <th>Accelerometer Z</th>
                                 <th>Latitude</th>
                                 <th>Longitude</th>
+                                <th>Velocity</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -78,6 +79,7 @@
                                 <td>{{ thingy.accelerometerZ }}</td>
                                 <td>{{ thingy.latitude }}</td>
                                 <td>{{ thingy.longitude }}</td>
+                                <td>{{thingy.velocity}}</td>
                             </tr>
                         </tbody>
                         <pagination-controls (pageChange)="p = $event"></pagination-controls>
@@ -237,12 +239,32 @@
         <div class="col col-sm-4">
             <div class="card mb-4">
                 <div class="card-header">
-                    Color
+                    Velocity
+                    <span class="pull-right fa fa-line-chart" (click)="showVelGraph =! showVelGraph"></span>
                 </div>
                 <div class="card-block">
-                    <div [ngStyle]="{'background-color':rgbaColor, 'width':'250px', 'height':'250px'}">
-                    </div>
-                    <!--<h1 [ngStyle]="{'background-color':rgbaColor}">asdf</h1>-->
+                    <ngx-gauge *ngIf="!showVelGraph"
+                               [type]="gaugeDefType"
+                               [min] = "0"
+                               [max] = "50"
+                               [value]="gaugeVelValue"
+                               [label]="gaugeVelLabel"
+                               [append]="gaugeVelAppendText"
+                               [duration]="1"
+                               [thick]="10"
+                               [size]="250">;
+                    </ngx-gauge>
+                    <canvas *ngIf="showVelGraph"
+                            baseChart height="250"
+                            [datasets]="velChartData"
+                            [labels]="lineChartLabels"
+                            [options]="lineChartOptions"
+                            [colors]="lineChartColors"
+                            [legend]="lineChartLegend"
+                            [chartType]="lineChartType"
+                            (chartHover)="chartHovered($event)"
+                            (chartClick)="chartClicked($event)">
+                    </canvas>
                 </div>
             </div>
         </div>

@@ -32,6 +32,7 @@ export class ChartsComponent implements OnInit, OnChanges {
     showPresGraph = false;
     showHumGraph = false;
     showEco2Graph = false;
+    showVelGraph = false;
     showAccelGraph = true;
 
     lastThingyDate: Date;
@@ -95,6 +96,10 @@ export class ChartsComponent implements OnInit, OnChanges {
     gaugePressLabel = "Pressure";
     gaugePressAppendText = "Pa";
 
+    gaugeVelValue = 0;
+    gaugeVelLabel = "Velocity";
+    gaugeVelAppendText = "m/s";
+
     gaugeHumValue = 0;
     gaugeHumLabel = "Humidity";
     gaugeHumAppendText = "%";
@@ -124,6 +129,9 @@ export class ChartsComponent implements OnInit, OnChanges {
     ];
     public presChartData: Array<any> = [
         { data: [], label: 'Pressure [Pa]' }
+    ];
+    public velChartData: Array<any> = [
+        { data: [], label: 'Velocity [m/s]' }
     ];
     public humChartData: Array<any> = [
         { data: [], label: 'Humidity [%]' }
@@ -222,6 +230,7 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.gaugePressValue = this.lastThingy.pressure;
         this.gaugeHumValue = this.lastThingy.humidity;
         this.gaugeEcoValue = this.lastThingy.eco2;
+        this.gaugeVelValue = this.lastThingy.velocity;
 
         // color
         let colorMax = Math.max(this.lastThingy.colorRed, this.lastThingy.colorGreen, this.lastThingy.colorBlue);
@@ -273,6 +282,7 @@ export class ChartsComponent implements OnInit, OnChanges {
         let pres = this.getKeyOfThingData(this.thingyData, 'pressure', this.graphPoints);
         let hum = this.getKeyOfThingData(this.thingyData, 'humidity', this.graphPoints);
         let eco2 = this.getKeyOfThingData(this.thingyData, 'eco2', this.graphPoints);
+        let vel = this.getKeyOfThingData(this.thingyData, 'velocity', this.graphPoints);
 
         let chartLabels = [];
 
@@ -302,6 +312,9 @@ export class ChartsComponent implements OnInit, OnChanges {
         let presData = [
             { data: pres, label: 'Pressure [Pa]' }
         ];
+        let velData = [
+            { data: vel, label: 'Velocity [m/s]' }
+        ];
         let humData = [
             { data: hum, label: 'Humidity [%]' }
         ];
@@ -314,6 +327,7 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.humChartData = humData;
         this.eco2ChartData = eco2Data;
         this.polylineData = polyData;
+        this.velChartData = velData;
     }
 
     refreshGraphs(): void {
@@ -350,6 +364,10 @@ export class ChartsComponent implements OnInit, OnChanges {
             presClone[0].data.push(this.lastThingy.pressure);
             this.presChartData = presClone;
 
+            let velClone = this.velChartData.map(x => Object.assign({}, x));
+            velClone[0].data.push(this.lastThingy.velocity);
+            this.velChartData = velClone;
+
             let humClone = this.humChartData.map(x => Object.assign({}, x));
             humClone[0].data.push(this.lastThingy.humidity);
             this.humChartData = humClone;
@@ -363,6 +381,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             this.gaugePressValue = this.lastThingy.pressure;
             this.gaugeHumValue = this.lastThingy.humidity;
             this.gaugeEcoValue = this.lastThingy.eco2;
+            this.gaugeVelValue = this.lastThingy.velocity;
 
             // color
             let colorMax = Math.max(this.lastThingy.colorRed, this.lastThingy.colorGreen, this.lastThingy.colorBlue);
@@ -571,6 +590,7 @@ export class ChartsComponent implements OnInit, OnChanges {
         this.showHumGraph = false;
         this.showEco2Graph = false;
         this.showAccelGraph = false;
+        this.showVelGraph = false;
 
         this.arrivedMsgSent = false;
         this.tempMsgSent = false;

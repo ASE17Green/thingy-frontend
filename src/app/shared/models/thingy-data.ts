@@ -26,4 +26,5 @@ export class ThingyData {
     accelerometerZ: number;
     latitude: number;
     longitude: number;
+    velocity: number;
 }
